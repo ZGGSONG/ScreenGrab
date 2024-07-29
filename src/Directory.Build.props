@@ -1,0 +1,18 @@
+<Project>
+    <Import Project="..\Directory.Build.props"/>
+
+    <PropertyGroup Label="Nuget">
+        <!--<GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+        <Authors>zggsong</Authors>
+        <PackageIcon>nuget.png</PackageIcon>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageOutputPath>$(NugetTargetDirectory)</PackageOutputPath>
+        <PackageReleaseNotes>https://github.com/ZGGSONG/ScreenGrab/Releases</PackageReleaseNotes>
+        <PackageProjectUrl>https://github.com/ZGGSONG/ScreenGrab/</PackageProjectUrl>
+    </PropertyGroup>
+
+    <ItemGroup Label="Nuget">
+        <None Include="$(SolutionDir)nuget.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+</Project>

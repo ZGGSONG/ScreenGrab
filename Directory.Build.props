@@ -1,0 +1,11 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RepositoryUrl>https://github.com/ZGGSONG/ScreenGrab/</RepositoryUrl>
+
+        <!-- Define NuGet Packaging Directory -->
+        <NugetTargetDirectory>$(SolutionDir)artifacts\</NugetTargetDirectory>
+    </PropertyGroup>
+</Project>

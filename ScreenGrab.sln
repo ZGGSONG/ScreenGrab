@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab", "src\ScreenGrab\ScreenGrab.csproj", "{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Test", "tests\ScreenGrab.Test\ScreenGrab.Test.csproj", "{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6E5BF389-3D3F-4D74-9DD0-3B199CB529C5}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8F165B76-7E49-46F7-BB50-E05F2276D4D5}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1} = {6E5BF389-3D3F-4D74-9DD0-3B199CB529C5}
+		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C} = {9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}
+	EndGlobalSection
+EndGlobal
