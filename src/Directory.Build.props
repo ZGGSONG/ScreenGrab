@@ -6,6 +6,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
         <Authors>zggsong</Authors>
         <PackageIcon>nuget.png</PackageIcon>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageOutputPath>$(NugetTargetDirectory)</PackageOutputPath>
         <PackageReleaseNotes>https://github.com/ZGGSONG/ScreenGrab/Releases</PackageReleaseNotes>

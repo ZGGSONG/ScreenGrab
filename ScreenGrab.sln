@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab", "src\ScreenGrab\ScreenGrab.csproj", "{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Test", "tests\ScreenGrab.Test\ScreenGrab.Test.csproj", "{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6E5BF389-3D3F-4D74-9DD0-3B199CB529C5}"
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
@@ -20,7 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Sample", "tests\ScreenGrab.Sample\ScreenGrab.Sample.csproj", "{94390E18-11B6-413E-8571-BCE129F7B3D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,16 +33,16 @@ Global
 		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1} = {6E5BF389-3D3F-4D74-9DD0-3B199CB529C5}
-		{62FA4A0A-F8EF-4A62-8E90-9B0B2F42178C} = {9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}
+		{94390E18-11B6-413E-8571-BCE129F7B3D8} = {9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}
 	EndGlobalSection
 EndGlobal
