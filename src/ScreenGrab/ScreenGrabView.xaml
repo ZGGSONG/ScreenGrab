@@ -23,6 +23,8 @@
         </Viewbox>
         <Canvas x:Name="RegionClickCanvas"
                 Cursor="Cross"
+                MouseEnter="RegionClickCanvas_MouseEnter"
+                MouseLeave="RegionClickCanvas_MouseLeave"
                 MouseDown="RegionClickCanvas_MouseDown"
                 MouseMove="RegionClickCanvas_MouseMove"
                 MouseUp="RegionClickCanvas_MouseUp">
@@ -41,6 +43,14 @@
                                  Opacity="0"
                                  Color="#FF202020" />
             </Canvas.Background>
+            <!-- Horizontal Line -->
+            <Line x:Name="HorizontalLine"
+                  Stroke="#92caf4"
+                  StrokeThickness="1"/>
+            <!-- Vertical Line -->
+            <Line x:Name="VerticalLine"
+                  Stroke="#92caf4"
+                  StrokeThickness="1"/>
         </Canvas>
     </Grid>
 </Window>

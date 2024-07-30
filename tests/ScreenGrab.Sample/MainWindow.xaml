@@ -20,6 +20,7 @@
             <StackPanel Orientation="Horizontal">
                 <Button Margin="2 0" Content="Capture(Win+Shift+A)" Click="Capture_Click" />
                 <Button Margin="2 0" Content="Clean" Click="Clean_Click" />
+                <CheckBox Margin="2 0" Content="Polyline" Name="PolylineCb" />
             </StackPanel>
         </ui:Card>
         <ui:DynamicScrollViewer Grid.Row="2" Margin="8">

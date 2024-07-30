@@ -4,31 +4,35 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ScreenGrab.Extensions;
+using ScreenGrab.Utilities;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
-namespace ScreenGrab.Utilities;
+namespace ScreenGrab.Extensions;
 
-public static class ImageMethods
+public static class ImageExtensions
 {
-    public static ImageSource? GetWindowBoundsImage(Window passedWindow)
+    public static ImageSource? GetWindowBoundsImage(this Window passedWindow)
     {
         var bmp = passedWindow.GetWindowsBoundsBitmap();
         return bmp.ToImageSource();
     }
 
+    public static Tuple<double, double> GetWidthHeight(this Window window)
+    {
+        var dpi = VisualTreeHelper.GetDpi(window);
+        return new Tuple<double, double>(window.ActualWidth * dpi.DpiScaleX, window.ActualHeight * dpi.DpiScaleY);
+    }
+
     public static Bitmap GetWindowsBoundsBitmap(this Window passedWindow)
     {
-        var dpi = VisualTreeHelper.GetDpi(passedWindow);
-        var windowWidth = (int)(passedWindow.ActualWidth * dpi.DpiScaleX);
-        var windowHeight = (int)(passedWindow.ActualHeight * dpi.DpiScaleY);
+        var (windowWidth, windowHeight) = passedWindow.GetWidthHeight();
 
         var absPosPoint = passedWindow.GetAbsolutePosition();
 
         var thisCorrectedLeft = (int)absPosPoint.X;
         var thisCorrectedTop = (int)absPosPoint.Y;
 
-        Bitmap bmp = new(windowWidth, windowHeight, PixelFormat.Format32bppArgb);
+        Bitmap bmp = new((int)windowWidth, (int)windowHeight, PixelFormat.Format32bppArgb);
         using var g = Graphics.FromImage(bmp);
 
         g.CopyFromScreen(thisCorrectedLeft, thisCorrectedTop, 0, 0, bmp.Size, CopyPixelOperation.SourceCopy);

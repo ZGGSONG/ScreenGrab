@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using NHotkey;
 using NHotkey.Wpf;
-using ScreenGrab.Utilities;
+using ScreenGrab.Extensions;
 
 namespace ScreenGrab.Sample;
 
@@ -17,8 +17,12 @@ public partial class MainWindow
     {
         Clean();
 
-        ScreenGrabber.OnCaptured = bitmap => Img.Source = bitmap.ToImageSource();
-        ScreenGrabber.Capture();
+        ScreenGrabber.OnCaptured = bitmap =>
+        {
+            Img.Source = bitmap.ToImageSource();
+            Activate();
+        };
+        ScreenGrabber.Capture(PolylineCb.IsChecked ?? false);
     }
 
     private void Capture(object? sender, HotkeyEventArgs e)

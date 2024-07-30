@@ -19,10 +19,11 @@ public partial class ScreenGrabView
 {
     #region Constructors
 
-    public ScreenGrabView(Action<Bitmap>? action)
+    public ScreenGrabView(Action<Bitmap>? action, bool isPolyline = false)
     {
         InitializeComponent();
         _onImageCaptured = action;
+        _isPolyline = isPolyline;
     }
 
     #endregion Constructors
@@ -48,46 +49,53 @@ public partial class ScreenGrabView
     private double _yShiftDelta;
 
     private readonly Action<Bitmap>? _onImageCaptured;
+    private readonly bool _isPolyline;
 
     #endregion Fields
 
     #region Window Events
 
-    private void SetImageToBackground()
+    private void Window_Closed(object? sender, EventArgs e)
     {
-        BackgroundImage.Source = null;
-        BackgroundImage.Source = ImageMethods.GetWindowBoundsImage(this);
-        BackgroundBrush.Opacity = 0.2;
+        Close();
+
+        GC.Collect();
     }
 
-    private async void FreezeUnfreeze()
+    private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        if (BackgroundImage.Source == null)
-        {
-            BackgroundBrush.Opacity = 0;
-            await Task.Delay(150);
-            SetImageToBackground();
-        }
-        else
-        {
-            BackgroundImage.Source = null;
-        }
-    }
+        WindowState = WindowState.Maximized;
+        FullWindow.Rect = new Rect(0, 0, Width, Height);
+        KeyDown += ScreenGrab_KeyDown;
+        KeyUp += ScreenGrab_KeyUp;
 
-    private void CloseAllFullscreenGrabs()
-    {
-        foreach (var window in Application.Current.Windows)
-            if (window is ScreenGrabView sgv)
-                sgv.Close();
-        OnGrabClose?.Invoke();
-    }
+        SetImageToBackground();
 
-    private void FreezeUnfreezeAllScreenGrabs()
-    {
+#if DEBUG
+        Topmost = false;
+#endif
         
-        foreach (var window in Application.Current.Windows)
-            if (window is ScreenGrabView sgv)
-                sgv.FreezeUnfreeze();
+        if (!_isPolyline) return;
+        SetPolylineVisibility(true);
+        (HorizontalLine.X1, VerticalLine.Y1, (HorizontalLine.X2, VerticalLine.Y2)) = (0, 0, this.GetWidthHeight());
+    }
+
+    private void Window_Unloaded(object sender, RoutedEventArgs e)
+    {
+        FreezeBgImage();
+        BackgroundImage.UpdateLayout();
+        CurrentScreen = null;
+        _dpiScale = null;
+
+        Loaded -= Window_Loaded;
+        Unloaded -= Window_Unloaded;
+
+        RegionClickCanvas.MouseDown -= RegionClickCanvas_MouseDown;
+        RegionClickCanvas.MouseMove -= RegionClickCanvas_MouseMove;
+        RegionClickCanvas.MouseUp -= RegionClickCanvas_MouseUp;
+
+        KeyDown -= ScreenGrab_KeyDown;
+        KeyUp -= ScreenGrab_KeyUp;
     }
 
     private void ScreenGrab_KeyDown(object sender, KeyEventArgs e)
@@ -115,48 +123,74 @@ public partial class ScreenGrabView
         }
     }
 
-    private void Window_Closed(object? sender, EventArgs e)
+    private void SetImageToBackground()
     {
-        Close();
-
-        GC.Collect();
+        FreezeBgImage();
+        BackgroundImage.Source = this.GetWindowBoundsImage();
+        BackgroundBrush.Opacity = 0.2;
     }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e)
+    private async void FreezeUnfreeze()
     {
-        WindowState = WindowState.Maximized;
-        FullWindow.Rect = new Rect(0, 0, Width, Height);
-        KeyDown += ScreenGrab_KeyDown;
-        KeyUp += ScreenGrab_KeyUp;
-
-        SetImageToBackground();
-
-#if DEBUG
-        Topmost = false;
-#endif
+        if (BackgroundImage.Source == null)
+        {
+            if (_isPolyline)
+            {
+                SetPolylineVisibility(false);
+            }
+            BackgroundBrush.Opacity = 0;
+            await Task.Delay(150);
+            SetImageToBackground();
+            
+            if (IsMouseOver)
+                SetPolylineVisibility(_isPolyline);
+        }
+        else
+        {
+            FreezeBgImage();
+        }
     }
 
-    private void Window_Unloaded(object sender, RoutedEventArgs e)
+    private void CloseAllFullscreenGrabs()
     {
+        foreach (var window in Application.Current.Windows)
+            if (window is ScreenGrabView sgv)
+                sgv.Close();
+        OnGrabClose?.Invoke();
+    }
+
+    private void FreezeUnfreezeAllScreenGrabs()
+    {
+        foreach (var window in Application.Current.Windows)
+            if (window is ScreenGrabView sgv)
+                sgv.FreezeUnfreeze();
+    }
+    
+    private void FreezeBgImage()
+    {
+        BackgroundImage.Source?.Freeze();
         BackgroundImage.Source = null;
-        BackgroundImage.UpdateLayout();
-        CurrentScreen = null;
-        _dpiScale = null;
-
-        Loaded -= Window_Loaded;
-        Unloaded -= Window_Unloaded;
-
-        RegionClickCanvas.MouseDown -= RegionClickCanvas_MouseDown;
-        RegionClickCanvas.MouseMove -= RegionClickCanvas_MouseMove;
-        RegionClickCanvas.MouseUp -= RegionClickCanvas_MouseUp;
-
-        KeyDown -= ScreenGrab_KeyDown;
-        KeyUp -= ScreenGrab_KeyUp;
+    }
+    
+    private void SetPolylineVisibility(bool isVisible)
+    {
+        HorizontalLine.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        VerticalLine.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
     }
 
     #endregion
 
     #region Mouse Events
+    
+    private void RegionClickCanvas_MouseLeave(object sender, MouseEventArgs e)
+    {
+        SetPolylineVisibility(false);
+    }
+
+    private void RegionClickCanvas_MouseEnter(object sender, MouseEventArgs e)
+    {
+        SetPolylineVisibility(_isPolyline);
+    }
 
     private void RegionClickCanvas_MouseDown(object sender, MouseButtonEventArgs e)
     {
@@ -204,10 +238,23 @@ public partial class ScreenGrabView
 
     private void RegionClickCanvas_MouseMove(object sender, MouseEventArgs e)
     {
-        if (!_isSelecting)
-            return;
-
         var movingPoint = e.GetPosition(this);
+
+        if (!_isSelecting)
+        {
+            // Update the horizontal line to match the mouse Y position
+            HorizontalLine.Y1 = movingPoint.Y;
+            HorizontalLine.Y2 = movingPoint.Y;
+
+            // Update the vertical line to match the mouse X position
+            VerticalLine.X1 = movingPoint.X;
+            VerticalLine.X2 = movingPoint.X;
+            return;
+        }
+        
+        // Hide the lines
+        HorizontalLine.Visibility = Visibility.Collapsed;
+        VerticalLine.Visibility = Visibility.Collapsed;
 
         if (Keyboard.Modifiers == ModifierKeys.Shift)
         {
