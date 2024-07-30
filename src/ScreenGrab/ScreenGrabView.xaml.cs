@@ -220,7 +220,7 @@ public partial class ScreenGrabView
         }
 
         _selectBorder.BorderThickness = new Thickness(2);
-        var borderColor = Color.FromArgb(255, 175, 103, 193);
+        var borderColor = Color.FromArgb(255, 146, 202, 244);
         _selectBorder.BorderBrush = new SolidColorBrush(borderColor);
         _ = RegionClickCanvas.Children.Add(_selectBorder);
         Canvas.SetLeft(_selectBorder, _clickedPoint.X);
