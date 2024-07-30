@@ -5,37 +5,39 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ScreenGrab.Extensions;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace ScreenGrab.Utilities;
 
 public static class ImageMethods
 {
-    public static ImageSource GetWindowBoundsImage(Window passedWindow)
+    public static ImageSource? GetWindowBoundsImage(Window passedWindow)
     {
-        Bitmap bmp = GetWindowsBoundsBitmap(passedWindow);
-        return BitmapToImageSource(bmp);
+        var bmp = passedWindow.GetWindowsBoundsBitmap();
+        return bmp.ToImageSource();
     }
 
-    public static Bitmap GetWindowsBoundsBitmap(Window passedWindow)
+    public static Bitmap GetWindowsBoundsBitmap(this Window passedWindow)
     {
-        DpiScale dpi = VisualTreeHelper.GetDpi(passedWindow);
-        int windowWidth = (int)(passedWindow.ActualWidth * dpi.DpiScaleX);
-        int windowHeight = (int)(passedWindow.ActualHeight * dpi.DpiScaleY);
+        var dpi = VisualTreeHelper.GetDpi(passedWindow);
+        var windowWidth = (int)(passedWindow.ActualWidth * dpi.DpiScaleX);
+        var windowHeight = (int)(passedWindow.ActualHeight * dpi.DpiScaleY);
 
         var absPosPoint = passedWindow.GetAbsolutePosition();
 
-        int thisCorrectedLeft = (int)(absPosPoint.X);
-        int thisCorrectedTop = (int)(absPosPoint.Y);
+        var thisCorrectedLeft = (int)absPosPoint.X;
+        var thisCorrectedTop = (int)absPosPoint.Y;
 
-        Bitmap bmp = new(windowWidth, windowHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-        using Graphics g = Graphics.FromImage(bmp);
+        Bitmap bmp = new(windowWidth, windowHeight, PixelFormat.Format32bppArgb);
+        using var g = Graphics.FromImage(bmp);
 
         g.CopyFromScreen(thisCorrectedLeft, thisCorrectedTop, 0, 0, bmp.Size, CopyPixelOperation.SourceCopy);
         return bmp;
     }
 
-    public static BitmapImage BitmapToImageSource(Bitmap bitmap)
+    public static BitmapImage? ToImageSource(this Bitmap? bitmap)
     {
+        if (bitmap == null) return default;
         using MemoryStream memory = new();
         using WrappingStream wrapper = new(memory);
 
@@ -54,20 +56,19 @@ public static class ImageMethods
 
         return bitmapImage;
     }
-    
-    public static Bitmap GetRegionOfScreenAsBitmap(Rectangle region)
+
+    public static Bitmap GetRegionOfScreenAsBitmap(this Rectangle region)
     {
-        Bitmap bmp = new(region.Width, region.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        Bitmap bmp = new(region.Width, region.Height, PixelFormat.Format32bppArgb);
         using var g = Graphics.FromImage(bmp);
 
         g.CopyFromScreen(region.Left, region.Top, 0, 0, bmp.Size, CopyPixelOperation.SourceCopy);
-        bmp = PadImage(bmp);
+        bmp = bmp.PadImage();
 
-        // Singleton<HistoryService>.Instance.CacheLastBitmap(bmp);
         return bmp;
     }
-    
-    public static Bitmap PadImage(Bitmap image, int minW = 64, int minH = 64)
+
+    public static Bitmap PadImage(this Bitmap image, int minW = 64, int minH = 64)
     {
         if (image.Height >= minH && image.Width >= minW)
             return image;

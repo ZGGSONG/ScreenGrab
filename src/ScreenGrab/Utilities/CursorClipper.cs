@@ -3,12 +3,12 @@
 namespace ScreenGrab.Utilities;
 
 /// <summary>
-/// Functions to constrain the mouse cursor (typically used when dragging)
+///     Functions to constrain the mouse cursor (typically used when dragging)
 /// </summary>
 public static class CursorClipper
 {
     /// <summary>
-    /// Constrain mouse cursor to the area of the specified UI element.
+    ///     Constrain mouse cursor to the area of the specified UI element.
     /// </summary>
     /// <param name="element">Target UI element.</param>
     /// <returns>True on success.</returns>
@@ -18,19 +18,16 @@ public static class CursorClipper
 
         var topLeft = element.PointToScreen(new Point(0, 0));
 
-        PresentationSource source = PresentationSource.FromVisual(element);
-        if (source?.CompositionTarget == null)
-        {
-            return false;
-        }
+        var source = PresentationSource.FromVisual(element);
+        if (source?.CompositionTarget == null) return false;
 
-        double dpiX = dpi96 * source.CompositionTarget.TransformToDevice.M11;
-        double dpiY = dpi96 * source.CompositionTarget.TransformToDevice.M22;
+        var dpiX = dpi96 * source.CompositionTarget.TransformToDevice.M11;
+        var dpiY = dpi96 * source.CompositionTarget.TransformToDevice.M22;
 
         var width = (int)((element.ActualWidth + 1) * dpiX / dpi96);
         var height = (int)((element.ActualHeight + 1) * dpiY / dpi96);
 
-        OSInterop.RECT rect = new OSInterop.RECT
+        var rect = new OSInterop.RECT
         {
             left = (int)topLeft.X,
             top = (int)topLeft.Y,
@@ -42,7 +39,7 @@ public static class CursorClipper
     }
 
     /// <summary>
-    /// Remove any mouse cursor constraint.
+    ///     Remove any mouse cursor constraint.
     /// </summary>
     /// <returns>True on success.</returns>
     public static bool UnClipCursor()

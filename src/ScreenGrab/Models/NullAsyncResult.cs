@@ -13,5 +13,4 @@ public class NullAsyncResult : IAsyncResult
 
 public class NullWaitHandle : WaitHandle
 {
-
 }

@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows;
+using Point = System.Windows.Point;
 
 namespace ScreenGrab.Extensions;
 
@@ -18,43 +19,43 @@ public static class ShapeExtensions
     public static Rect GetScaledDownByDpi(this Rect rect, DpiScale dpi)
     {
         return new Rect(rect.X / dpi.DpiScaleX,
-                    rect.Y / dpi.DpiScaleY,
-                    rect.Width / dpi.DpiScaleX,
-                    rect.Height / dpi.DpiScaleY);
+            rect.Y / dpi.DpiScaleY,
+            rect.Width / dpi.DpiScaleX,
+            rect.Height / dpi.DpiScaleY);
     }
 
     public static Rect GetScaledUpByDpi(this Rect rect, DpiScale dpi)
     {
         return new Rect(rect.X * dpi.DpiScaleX,
-                    rect.Y * dpi.DpiScaleY,
-                    rect.Width * dpi.DpiScaleX,
-                    rect.Height * dpi.DpiScaleY);
+            rect.Y * dpi.DpiScaleY,
+            rect.Width * dpi.DpiScaleX,
+            rect.Height * dpi.DpiScaleY);
     }
 
-    public static Rect GetScaledUpByFraction(this Rect rect, Double scaleFactor)
+    public static Rect GetScaledUpByFraction(this Rect rect, double scaleFactor)
     {
         return new Rect(rect.X * scaleFactor,
-                    rect.Y * scaleFactor,
-                    rect.Width * scaleFactor,
-                    rect.Height * scaleFactor);
+            rect.Y * scaleFactor,
+            rect.Width * scaleFactor,
+            rect.Height * scaleFactor);
     }
 
-    public static Rect GetScaleSizeByFraction(this Rect rect, Double scaleFactor)
+    public static Rect GetScaleSizeByFraction(this Rect rect, double scaleFactor)
     {
         return new Rect(rect.X,
-                    rect.Y,
-                    rect.Width * scaleFactor,
-                    rect.Height * scaleFactor);
+            rect.Y,
+            rect.Width * scaleFactor,
+            rect.Height * scaleFactor);
     }
 
     public static bool IsGood(this Rect rect)
     {
-        if (double.IsNaN(rect.X) 
+        if (double.IsNaN(rect.X)
             || double.IsNegativeInfinity(rect.X)
             || double.IsPositiveInfinity(rect.X))
             return false;
-        
-        if (double.IsNaN(rect.Y) 
+
+        if (double.IsNaN(rect.Y)
             || double.IsNegativeInfinity(rect.Y)
             || double.IsPositiveInfinity(rect.Y))
             return false;
@@ -74,10 +75,10 @@ public static class ShapeExtensions
         return true;
     }
 
-    public static System.Windows.Point CenterPoint(this Rect rect)
+    public static Point CenterPoint(this Rect rect)
     {
-        double x = rect.Left + (rect.Width / 2);
-        double y = rect.Top + (rect.Height / 2);
-        return new(x, y);
+        var x = rect.Left + rect.Width / 2;
+        var y = rect.Top + rect.Height / 2;
+        return new Point(x, y);
     }
 }

@@ -8,9 +8,9 @@ public static class DapploExtensions
     public static Point ScaledCenterPoint(this DisplayInfo displayInfo)
     {
         Rect displayRect = displayInfo.Bounds;
-        NativeMethods.GetScaleFactorForMonitor(displayInfo.MonitorHandle, out uint scaleFactor);
-        double scaleFraction = scaleFactor / 100.0;
-        Point rawCenter = displayRect.CenterPoint();
+        NativeMethods.GetScaleFactorForMonitor(displayInfo.MonitorHandle, out var scaleFactor);
+        var scaleFraction = scaleFactor / 100.0;
+        var rawCenter = displayRect.CenterPoint();
         Point displayScaledCenterPoint = new(rawCenter.X / scaleFraction, rawCenter.Y / scaleFraction);
         return displayScaledCenterPoint;
     }
@@ -18,8 +18,8 @@ public static class DapploExtensions
     public static Rect ScaledBounds(this DisplayInfo displayInfo)
     {
         Rect displayRect = displayInfo.Bounds;
-        NativeMethods.GetScaleFactorForMonitor(displayInfo.MonitorHandle, out uint scaleFactor);
-        double scaleFraction = scaleFactor / 100.0;
+        NativeMethods.GetScaleFactorForMonitor(displayInfo.MonitorHandle, out var scaleFactor);
+        var scaleFraction = scaleFactor / 100.0;
 
         // Scale size and position
         Rect scaledBounds = new(

@@ -1,49 +1,19 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
-static partial class OSInterop
+internal static partial class OSInterop
 {
-    [LibraryImport("user32.dll")]
-    public static partial int GetSystemMetrics(int smIndex);
+    public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+    public enum InputType : uint
+    {
+        INPUT_MOUSE,
+        INPUT_KEYBOARD,
+        INPUT_HARDWARE
+    }
+
     public const int SM_CMONITORS = 80;
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool SystemParametersInfo(int nAction, int nParam, ref RECT rc, int nUpdate);
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    public static extern bool GetMonitorInfo(HandleRef hmonitor, [In, Out] MONITORINFOEX info);
-
-    [DllImport("user32.dll")]
-    public static extern IntPtr MonitorFromWindow(HandleRef handle, int flags);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool ClipCursor(ref RECT lpRect);
-
-    [DllImport("user32.dll")]
-    public static extern bool ClipCursor([In()] IntPtr lpRect);
-
-    public struct RECT
-    {
-        public int left;
-        public int top;
-        public int right;
-        public int bottom;
-        public int width { get { return right - left; } }
-        public int height { get { return bottom - top; } }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Auto)]
-    public class MONITORINFOEX
-    {
-        public int cbSize = Marshal.SizeOf(typeof(MONITORINFOEX));
-        public RECT rcMonitor = new RECT();
-        public RECT rcWork = new RECT();
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public char[] szDevice = new char[32];
-        public int dwFlags;
-    }
 
     public const int WH_KEYBOARD_LL = 13;
     public const int VK_SHIFT = 0x10;
@@ -56,12 +26,32 @@ static partial class OSInterop
     public const int WM_KEYDOWN = 0x0100;
     public const int WM_KEYUP = 0x0101;
 
+    [LibraryImport("user32.dll")]
+    public static partial int GetSystemMetrics(int smIndex);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SystemParametersInfo(int nAction, int nParam, ref RECT rc, int nUpdate);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern bool GetMonitorInfo(HandleRef hmonitor, [In] [Out] MONITORINFOEX info);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr MonitorFromWindow(HandleRef handle, int flags);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool ClipCursor(ref RECT lpRect);
+
+    [DllImport("user32.dll")]
+    public static extern bool ClipCursor([In] IntPtr lpRect);
+
     [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool FreeLibrary(IntPtr hModule);
 
     [LibraryImport("user32.dll", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool UnhookWindowsHookEx(IntPtr idHook);
 
@@ -69,24 +59,45 @@ static partial class OSInterop
     internal static partial IntPtr LoadLibrary(string lpFileName);
 
     [LibraryImport("user32.dll", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
     internal static partial IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, int dwThreadId);
 
     [LibraryImport("user32.dll", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
     internal static partial IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
 
     [LibraryImport("user32.dll", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
     internal static partial short GetAsyncKeyState(int vKey);
 
-    public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
-
     [LibraryImport("user32.dll")]
-    public static partial short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
+    public static partial short GetAsyncKeyState(Keys vKey);
 
     [LibraryImport("user32.dll")]
     public static partial uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+
+    public struct RECT
+    {
+        public int left;
+        public int top;
+        public int right;
+        public int bottom;
+        public int width => right - left;
+        public int height => bottom - top;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Auto)]
+    public class MONITORINFOEX
+    {
+        public int cbSize = Marshal.SizeOf(typeof(MONITORINFOEX));
+        public RECT rcMonitor = new();
+        public RECT rcWork = new();
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public char[] szDevice = new char[32];
+
+        public int dwFlags;
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct INPUT
@@ -94,28 +105,15 @@ static partial class OSInterop
         public InputType Type;
         public InputUnion U;
 
-        public static int Size
-        {
-            get { return Marshal.SizeOf(typeof(INPUT)); }
-        }
-    }
-
-    public enum InputType : uint
-    {
-        INPUT_MOUSE,
-        INPUT_KEYBOARD,
-        INPUT_HARDWARE,
+        public static int Size => Marshal.SizeOf(typeof(INPUT));
     }
 
     [StructLayout(LayoutKind.Explicit)]
     public struct InputUnion
     {
-        [FieldOffset(0)]
-        internal MOUSEINPUT Mi;
-        [FieldOffset(0)]
-        internal KEYBDINPUT Ki;
-        [FieldOffset(0)]
-        internal HARDWAREINPUT Hi;
+        [FieldOffset(0)] internal MOUSEINPUT Mi;
+        [FieldOffset(0)] internal KEYBDINPUT Ki;
+        [FieldOffset(0)] internal HARDWAREINPUT Hi;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -145,7 +143,7 @@ static partial class OSInterop
         VIRTUALDESK = 0x4000,
         WHEEL = 0x0800,
         XDOWN = 0x0080,
-        XUP = 0x0100,
+        XUP = 0x0100
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -164,872 +162,873 @@ static partial class OSInterop
         EXTENDEDKEY = 0x0001,
         KEYUP = 0x0002,
         SCANCODE = 0x0008,
-        UNICODE = 0x0004,
+        UNICODE = 0x0004
     }
 
     internal enum VirtualKeyShort : short
     {
         /// <summary>
-        /// Left mouse button
+        ///     Left mouse button
         /// </summary>
         LBUTTON = 0x01,
 
         /// <summary>
-        /// Right mouse button
+        ///     Right mouse button
         /// </summary>
         RBUTTON = 0x02,
 
         /// <summary>
-        /// Control-break processing
+        ///     Control-break processing
         /// </summary>
         CANCEL = 0x03,
 
         /// <summary>
-        /// Middle mouse button (three-button mouse)
+        ///     Middle mouse button (three-button mouse)
         /// </summary>
         MBUTTON = 0x04,
 
         /// <summary>
-        /// Windows 2000/XP: X1 mouse button
+        ///     Windows 2000/XP: X1 mouse button
         /// </summary>
         XBUTTON1 = 0x05,
 
         /// <summary>
-        /// Windows 2000/XP: X2 mouse button
+        ///     Windows 2000/XP: X2 mouse button
         /// </summary>
         XBUTTON2 = 0x06,
 
         /// <summary>
-        /// BACKSPACE key
+        ///     BACKSPACE key
         /// </summary>
         BACK = 0x08,
 
         /// <summary>
-        /// TAB key
+        ///     TAB key
         /// </summary>
         TAB = 0x09,
 
         /// <summary>
-        /// CLEAR key
+        ///     CLEAR key
         /// </summary>
         CLEAR = 0x0C,
 
         /// <summary>
-        /// ENTER key
+        ///     ENTER key
         /// </summary>
         RETURN = 0x0D,
 
         /// <summary>
-        /// SHIFT key
+        ///     SHIFT key
         /// </summary>
         SHIFT = 0x10,
 
         /// <summary>
-        /// CTRL key
+        ///     CTRL key
         /// </summary>
         CONTROL = 0x11,
 
         /// <summary>
-        /// ALT key
+        ///     ALT key
         /// </summary>
         MENU = 0x12,
 
         /// <summary>
-        /// PAUSE key
+        ///     PAUSE key
         /// </summary>
         PAUSE = 0x13,
 
         /// <summary>
-        /// CAPS LOCK key
+        ///     CAPS LOCK key
         /// </summary>
         CAPITAL = 0x14,
 
         /// <summary>
-        /// Input Method Editor (IME) Kana mode
+        ///     Input Method Editor (IME) Kana mode
         /// </summary>
         KANA = 0x15,
 
         /// <summary>
-        /// IME Hangul mode
+        ///     IME Hangul mode
         /// </summary>
         HANGUL = 0x15,
 
         /// <summary>
-        /// IME Junja mode
+        ///     IME Junja mode
         /// </summary>
         JUNJA = 0x17,
 
         /// <summary>
-        /// IME final mode
+        ///     IME final mode
         /// </summary>
         FINAL = 0x18,
 
         /// <summary>
-        /// IME Hanja mode
+        ///     IME Hanja mode
         /// </summary>
         HANJA = 0x19,
 
         /// <summary>
-        /// IME Kanji mode
+        ///     IME Kanji mode
         /// </summary>
         KANJI = 0x19,
 
         /// <summary>
-        /// ESC key
+        ///     ESC key
         /// </summary>
         ESCAPE = 0x1B,
 
         /// <summary>
-        /// IME convert
+        ///     IME convert
         /// </summary>
         CONVERT = 0x1C,
 
         /// <summary>
-        /// IME nonconvert
+        ///     IME nonconvert
         /// </summary>
         NONCONVERT = 0x1D,
 
         /// <summary>
-        /// IME accept
+        ///     IME accept
         /// </summary>
         ACCEPT = 0x1E,
 
         /// <summary>
-        /// IME mode change request
+        ///     IME mode change request
         /// </summary>
         MODECHANGE = 0x1F,
 
         /// <summary>
-        /// SPACEBAR
+        ///     SPACEBAR
         /// </summary>
         SPACE = 0x20,
 
         /// <summary>
-        /// PAGE UP key
+        ///     PAGE UP key
         /// </summary>
         PRIOR = 0x21,
 
         /// <summary>
-        /// PAGE DOWN key
+        ///     PAGE DOWN key
         /// </summary>
         NEXT = 0x22,
 
         /// <summary>
-        /// END key
+        ///     END key
         /// </summary>
         END = 0x23,
 
         /// <summary>
-        /// HOME key
+        ///     HOME key
         /// </summary>
         HOME = 0x24,
 
         /// <summary>
-        /// LEFT ARROW key
+        ///     LEFT ARROW key
         /// </summary>
         LEFT = 0x25,
 
         /// <summary>
-        /// UP ARROW key
+        ///     UP ARROW key
         /// </summary>
         UP = 0x26,
 
         /// <summary>
-        /// RIGHT ARROW key
+        ///     RIGHT ARROW key
         /// </summary>
         RIGHT = 0x27,
 
         /// <summary>
-        /// DOWN ARROW key
+        ///     DOWN ARROW key
         /// </summary>
         DOWN = 0x28,
 
         /// <summary>
-        /// SELECT key
+        ///     SELECT key
         /// </summary>
         SELECT = 0x29,
 
         /// <summary>
-        /// PRINT key
+        ///     PRINT key
         /// </summary>
         PRINT = 0x2A,
 
         /// <summary>
-        /// EXECUTE key
+        ///     EXECUTE key
         /// </summary>
         EXECUTE = 0x2B,
 
         /// <summary>
-        /// PRINT SCREEN key
+        ///     PRINT SCREEN key
         /// </summary>
         SNAPSHOT = 0x2C,
 
         /// <summary>
-        /// INS key
+        ///     INS key
         /// </summary>
         INSERT = 0x2D,
 
         /// <summary>
-        /// DEL key
+        ///     DEL key
         /// </summary>
         DELETE = 0x2E,
 
         /// <summary>
-        /// HELP key
+        ///     HELP key
         /// </summary>
         HELP = 0x2F,
 
         /// <summary>
-        /// 0 key
+        ///     0 key
         /// </summary>
         KEY_0 = 0x30,
 
         /// <summary>
-        /// 1 key
+        ///     1 key
         /// </summary>
         KEY_1 = 0x31,
 
         /// <summary>
-        /// 2 key
+        ///     2 key
         /// </summary>
         KEY_2 = 0x32,
 
         /// <summary>
-        /// 3 key
+        ///     3 key
         /// </summary>
         KEY_3 = 0x33,
 
         /// <summary>
-        /// 4 key
+        ///     4 key
         /// </summary>
         KEY_4 = 0x34,
 
         /// <summary>
-        /// 5 key
+        ///     5 key
         /// </summary>
         KEY_5 = 0x35,
 
         /// <summary>
-        /// 6 key
+        ///     6 key
         /// </summary>
         KEY_6 = 0x36,
 
         /// <summary>
-        /// 7 key
+        ///     7 key
         /// </summary>
         KEY_7 = 0x37,
 
         /// <summary>
-        /// 8 key
+        ///     8 key
         /// </summary>
         KEY_8 = 0x38,
 
         /// <summary>
-        /// 9 key
+        ///     9 key
         /// </summary>
         KEY_9 = 0x39,
 
         /// <summary>
-        /// A key
+        ///     A key
         /// </summary>
         KEY_A = 0x41,
 
         /// <summary>
-        /// B key
+        ///     B key
         /// </summary>
         KEY_B = 0x42,
 
         /// <summary>
-        /// C key
+        ///     C key
         /// </summary>
         KEY_C = 0x43,
 
         /// <summary>
-        /// D key
+        ///     D key
         /// </summary>
         KEY_D = 0x44,
 
         /// <summary>
-        /// E key
+        ///     E key
         /// </summary>
         KEY_E = 0x45,
 
         /// <summary>
-        /// F key
+        ///     F key
         /// </summary>
         KEY_F = 0x46,
 
         /// <summary>
-        /// G key
+        ///     G key
         /// </summary>
         KEY_G = 0x47,
 
         /// <summary>
-        /// H key
+        ///     H key
         /// </summary>
         KEY_H = 0x48,
 
         /// <summary>
-        /// I key
+        ///     I key
         /// </summary>
         KEY_I = 0x49,
 
         /// <summary>
-        /// J key
+        ///     J key
         /// </summary>
         KEY_J = 0x4A,
 
         /// <summary>
-        /// K key
+        ///     K key
         /// </summary>
         KEY_K = 0x4B,
 
         /// <summary>
-        /// L key
+        ///     L key
         /// </summary>
         KEY_L = 0x4C,
 
         /// <summary>
-        /// M key
+        ///     M key
         /// </summary>
         KEY_M = 0x4D,
 
         /// <summary>
-        /// N key
+        ///     N key
         /// </summary>
         KEY_N = 0x4E,
 
         /// <summary>
-        /// O key
+        ///     O key
         /// </summary>
         KEY_O = 0x4F,
 
         /// <summary>
-        /// P key
+        ///     P key
         /// </summary>
         KEY_P = 0x50,
 
         /// <summary>
-        /// Q key
+        ///     Q key
         /// </summary>
         KEY_Q = 0x51,
 
         /// <summary>
-        /// R key
+        ///     R key
         /// </summary>
         KEY_R = 0x52,
 
         /// <summary>
-        /// S key
+        ///     S key
         /// </summary>
         KEY_S = 0x53,
 
         /// <summary>
-        /// T key
+        ///     T key
         /// </summary>
         KEY_T = 0x54,
 
         /// <summary>
-        /// U key
+        ///     U key
         /// </summary>
         KEY_U = 0x55,
 
         /// <summary>
-        /// V key
+        ///     V key
         /// </summary>
         KEY_V = 0x56,
 
         /// <summary>
-        /// W key
+        ///     W key
         /// </summary>
         KEY_W = 0x57,
 
         /// <summary>
-        /// X key
+        ///     X key
         /// </summary>
         KEY_X = 0x58,
 
         /// <summary>
-        /// Y key
+        ///     Y key
         /// </summary>
         KEY_Y = 0x59,
 
         /// <summary>
-        /// Z key
+        ///     Z key
         /// </summary>
         KEY_Z = 0x5A,
 
         /// <summary>
-        /// Left Windows key (Microsoft Natural keyboard)
+        ///     Left Windows key (Microsoft Natural keyboard)
         /// </summary>
         LWIN = 0x5B,
 
         /// <summary>
-        /// Right Windows key (Natural keyboard)
+        ///     Right Windows key (Natural keyboard)
         /// </summary>
         RWIN = 0x5C,
 
         /// <summary>
-        /// Applications key (Natural keyboard)
+        ///     Applications key (Natural keyboard)
         /// </summary>
         APPS = 0x5D,
 
         /// <summary>
-        /// Computer Sleep key
+        ///     Computer Sleep key
         /// </summary>
         SLEEP = 0x5F,
 
         /// <summary>
-        /// Numeric keypad 0 key
+        ///     Numeric keypad 0 key
         /// </summary>
         NUMPAD0 = 0x60,
 
         /// <summary>
-        /// Numeric keypad 1 key
+        ///     Numeric keypad 1 key
         /// </summary>
         NUMPAD1 = 0x61,
 
         /// <summary>
-        /// Numeric keypad 2 key
+        ///     Numeric keypad 2 key
         /// </summary>
         NUMPAD2 = 0x62,
 
         /// <summary>
-        /// Numeric keypad 3 key
+        ///     Numeric keypad 3 key
         /// </summary>
         NUMPAD3 = 0x63,
 
         /// <summary>
-        /// Numeric keypad 4 key
+        ///     Numeric keypad 4 key
         /// </summary>
         NUMPAD4 = 0x64,
 
         /// <summary>
-        /// Numeric keypad 5 key
+        ///     Numeric keypad 5 key
         /// </summary>
         NUMPAD5 = 0x65,
 
         /// <summary>
-        /// Numeric keypad 6 key
+        ///     Numeric keypad 6 key
         /// </summary>
         NUMPAD6 = 0x66,
 
         /// <summary>
-        /// Numeric keypad 7 key
+        ///     Numeric keypad 7 key
         /// </summary>
         NUMPAD7 = 0x67,
 
         /// <summary>
-        /// Numeric keypad 8 key
+        ///     Numeric keypad 8 key
         /// </summary>
         NUMPAD8 = 0x68,
 
         /// <summary>
-        /// Numeric keypad 9 key
+        ///     Numeric keypad 9 key
         /// </summary>
         NUMPAD9 = 0x69,
 
         /// <summary>
-        /// Multiply key
+        ///     Multiply key
         /// </summary>
         MULTIPLY = 0x6A,
 
         /// <summary>
-        /// Add key
+        ///     Add key
         /// </summary>
         ADD = 0x6B,
 
         /// <summary>
-        /// Separator key
+        ///     Separator key
         /// </summary>
         SEPARATOR = 0x6C,
 
         /// <summary>
-        /// Subtract key
+        ///     Subtract key
         /// </summary>
         SUBTRACT = 0x6D,
 
         /// <summary>
-        /// Decimal key
+        ///     Decimal key
         /// </summary>
         DECIMAL = 0x6E,
 
         /// <summary>
-        /// Divide key
+        ///     Divide key
         /// </summary>
         DIVIDE = 0x6F,
 
         /// <summary>
-        /// F1 key
+        ///     F1 key
         /// </summary>
         F1 = 0x70,
 
         /// <summary>
-        /// F2 key
+        ///     F2 key
         /// </summary>
         F2 = 0x71,
 
         /// <summary>
-        /// F3 key
+        ///     F3 key
         /// </summary>
         F3 = 0x72,
 
         /// <summary>
-        /// F4 key
+        ///     F4 key
         /// </summary>
         F4 = 0x73,
 
         /// <summary>
-        /// F5 key
+        ///     F5 key
         /// </summary>
         F5 = 0x74,
 
         /// <summary>
-        /// F6 key
+        ///     F6 key
         /// </summary>
         F6 = 0x75,
 
         /// <summary>
-        /// F7 key
+        ///     F7 key
         /// </summary>
         F7 = 0x76,
 
         /// <summary>
-        /// F8 key
+        ///     F8 key
         /// </summary>
         F8 = 0x77,
 
         /// <summary>
-        /// F9 key
+        ///     F9 key
         /// </summary>
         F9 = 0x78,
 
         /// <summary>
-        /// F10 key
+        ///     F10 key
         /// </summary>
         F10 = 0x79,
 
         /// <summary>
-        /// F11 key
+        ///     F11 key
         /// </summary>
         F11 = 0x7A,
 
         /// <summary>
-        /// F12 key
+        ///     F12 key
         /// </summary>
         F12 = 0x7B,
 
         /// <summary>
-        /// F13 key
+        ///     F13 key
         /// </summary>
         F13 = 0x7C,
 
         /// <summary>
-        /// F14 key
+        ///     F14 key
         /// </summary>
         F14 = 0x7D,
 
         /// <summary>
-        /// F15 key
+        ///     F15 key
         /// </summary>
         F15 = 0x7E,
 
         /// <summary>
-        /// F16 key
+        ///     F16 key
         /// </summary>
         F16 = 0x7F,
 
         /// <summary>
-        /// F17 key
+        ///     F17 key
         /// </summary>
         F17 = 0x80,
 
         /// <summary>
-        /// F18 key
+        ///     F18 key
         /// </summary>
         F18 = 0x81,
 
         /// <summary>
-        /// F19 key
+        ///     F19 key
         /// </summary>
         F19 = 0x82,
 
         /// <summary>
-        /// F20 key
+        ///     F20 key
         /// </summary>
         F20 = 0x83,
 
         /// <summary>
-        /// F21 key
+        ///     F21 key
         /// </summary>
         F21 = 0x84,
 
         /// <summary>
-        /// F22 key, (PPC only) Key used to lock device.
+        ///     F22 key, (PPC only) Key used to lock device.
         /// </summary>
         F22 = 0x85,
 
         /// <summary>
-        /// F23 key
+        ///     F23 key
         /// </summary>
         F23 = 0x86,
 
         /// <summary>
-        /// F24 key
+        ///     F24 key
         /// </summary>
         F24 = 0x87,
 
         /// <summary>
-        /// NUM LOCK key
+        ///     NUM LOCK key
         /// </summary>
         NUMLOCK = 0x90,
 
         /// <summary>
-        /// SCROLL LOCK key
+        ///     SCROLL LOCK key
         /// </summary>
         SCROLL = 0x91,
 
         /// <summary>
-        /// Left SHIFT key
+        ///     Left SHIFT key
         /// </summary>
         LSHIFT = 0xA0,
 
         /// <summary>
-        /// Right SHIFT key
+        ///     Right SHIFT key
         /// </summary>
         RSHIFT = 0xA1,
 
         /// <summary>
-        /// Left CONTROL key
+        ///     Left CONTROL key
         /// </summary>
         LCONTROL = 0xA2,
 
         /// <summary>
-        /// Right CONTROL key
+        ///     Right CONTROL key
         /// </summary>
         RCONTROL = 0xA3,
 
         /// <summary>
-        /// Left MENU key
+        ///     Left MENU key
         /// </summary>
         LMENU = 0xA4,
 
         /// <summary>
-        /// Right MENU key
+        ///     Right MENU key
         /// </summary>
         RMENU = 0xA5,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Back key
+        ///     Windows 2000/XP: Browser Back key
         /// </summary>
         BROWSER_BACK = 0xA6,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Forward key
+        ///     Windows 2000/XP: Browser Forward key
         /// </summary>
         BROWSER_FORWARD = 0xA7,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Refresh key
+        ///     Windows 2000/XP: Browser Refresh key
         /// </summary>
         BROWSER_REFRESH = 0xA8,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Stop key
+        ///     Windows 2000/XP: Browser Stop key
         /// </summary>
         BROWSER_STOP = 0xA9,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Search key
+        ///     Windows 2000/XP: Browser Search key
         /// </summary>
         BROWSER_SEARCH = 0xAA,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Favorites key
+        ///     Windows 2000/XP: Browser Favorites key
         /// </summary>
         BROWSER_FAVORITES = 0xAB,
 
         /// <summary>
-        /// Windows 2000/XP: Browser Start and Home key
+        ///     Windows 2000/XP: Browser Start and Home key
         /// </summary>
         BROWSER_HOME = 0xAC,
 
         /// <summary>
-        /// Windows 2000/XP: Volume Mute key
+        ///     Windows 2000/XP: Volume Mute key
         /// </summary>
         VOLUME_MUTE = 0xAD,
 
         /// <summary>
-        /// Windows 2000/XP: Volume Down key
+        ///     Windows 2000/XP: Volume Down key
         /// </summary>
         VOLUME_DOWN = 0xAE,
 
         /// <summary>
-        /// Windows 2000/XP: Volume Up key
+        ///     Windows 2000/XP: Volume Up key
         /// </summary>
         VOLUME_UP = 0xAF,
 
         /// <summary>
-        /// Windows 2000/XP: Next Track key
+        ///     Windows 2000/XP: Next Track key
         /// </summary>
         MEDIA_NEXT_TRACK = 0xB0,
 
         /// <summary>
-        /// Windows 2000/XP: Previous Track key
+        ///     Windows 2000/XP: Previous Track key
         /// </summary>
         MEDIA_PREV_TRACK = 0xB1,
 
         /// <summary>
-        /// Windows 2000/XP: Stop Media key
+        ///     Windows 2000/XP: Stop Media key
         /// </summary>
         MEDIA_STOP = 0xB2,
 
         /// <summary>
-        /// Windows 2000/XP: Play/Pause Media key
+        ///     Windows 2000/XP: Play/Pause Media key
         /// </summary>
         MEDIA_PLAY_PAUSE = 0xB3,
 
         /// <summary>
-        /// Windows 2000/XP: Start Mail key
+        ///     Windows 2000/XP: Start Mail key
         /// </summary>
         LAUNCH_MAIL = 0xB4,
 
         /// <summary>
-        /// Windows 2000/XP: Select Media key
+        ///     Windows 2000/XP: Select Media key
         /// </summary>
         LAUNCH_MEDIA_SELECT = 0xB5,
 
         /// <summary>
-        /// Windows 2000/XP: Start Application 1 key
+        ///     Windows 2000/XP: Start Application 1 key
         /// </summary>
         LAUNCH_APP1 = 0xB6,
 
         /// <summary>
-        /// Windows 2000/XP: Start Application 2 key
+        ///     Windows 2000/XP: Start Application 2 key
         /// </summary>
         LAUNCH_APP2 = 0xB7,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_1 = 0xBA,
 
         /// <summary>
-        /// Windows 2000/XP: For any country/region, the '+' key
+        ///     Windows 2000/XP: For any country/region, the '+' key
         /// </summary>
         OEM_PLUS = 0xBB,
 
         /// <summary>
-        /// Windows 2000/XP: For any country/region, the ',' key
+        ///     Windows 2000/XP: For any country/region, the ',' key
         /// </summary>
         OEM_COMMA = 0xBC,
 
         /// <summary>
-        /// Windows 2000/XP: For any country/region, the '-' key
+        ///     Windows 2000/XP: For any country/region, the '-' key
         /// </summary>
         OEM_MINUS = 0xBD,
 
         /// <summary>
-        /// Windows 2000/XP: For any country/region, the '.' key
+        ///     Windows 2000/XP: For any country/region, the '.' key
         /// </summary>
         OEM_PERIOD = 0xBE,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_2 = 0xBF,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_3 = 0xC0,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_4 = 0xDB,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_5 = 0xDC,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_6 = 0xDD,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_7 = 0xDE,
 
         /// <summary>
-        /// Used for miscellaneous characters; it can vary by keyboard.
+        ///     Used for miscellaneous characters; it can vary by keyboard.
         /// </summary>
         OEM_8 = 0xDF,
 
         /// <summary>
-        /// Windows 2000/XP: Either the angle bracket key or the backslash key on the RT 102-key keyboard
+        ///     Windows 2000/XP: Either the angle bracket key or the backslash key on the RT 102-key keyboard
         /// </summary>
         OEM_102 = 0xE2,
 
         /// <summary>
-        /// Windows 95/98/Me, Windows NT 4.0, Windows 2000/XP: IME PROCESS key
+        ///     Windows 95/98/Me, Windows NT 4.0, Windows 2000/XP: IME PROCESS key
         /// </summary>
         PROCESSKEY = 0xE5,
 
         /// <summary>
-        /// Windows 2000/XP: Used to pass Unicode characters as if they were keystrokes.
-        /// The VK_PACKET key is the low word of a 32-bit Virtual Key value used for non-keyboard input methods. For more information,
-        /// see Remark in KEYBDINPUT, SendInput, WM_KEYDOWN, and WM_KEYUP
+        ///     Windows 2000/XP: Used to pass Unicode characters as if they were keystrokes.
+        ///     The VK_PACKET key is the low word of a 32-bit Virtual Key value used for non-keyboard input methods. For more
+        ///     information,
+        ///     see Remark in KEYBDINPUT, SendInput, WM_KEYDOWN, and WM_KEYUP
         /// </summary>
         PACKET = 0xE7,
 
         /// <summary>
-        /// Attn key
+        ///     Attn key
         /// </summary>
         ATTN = 0xF6,
 
         /// <summary>
-        /// CrSel key
+        ///     CrSel key
         /// </summary>
         CRSEL = 0xF7,
 
         /// <summary>
-        /// ExSel key
+        ///     ExSel key
         /// </summary>
         EXSEL = 0xF8,
 
         /// <summary>
-        /// Erase EOF key
+        ///     Erase EOF key
         /// </summary>
         EREOF = 0xF9,
 
         /// <summary>
-        /// Play key
+        ///     Play key
         /// </summary>
         PLAY = 0xFA,
 
         /// <summary>
-        /// Zoom key
+        ///     Zoom key
         /// </summary>
         ZOOM = 0xFB,
 
         /// <summary>
-        /// Reserved
+        ///     Reserved
         /// </summary>
         NONAME = 0xFC,
 
         /// <summary>
-        /// PA1 key
+        ///     PA1 key
         /// </summary>
         PA1 = 0xFD,
 
         /// <summary>
-        /// Clear key
+        ///     Clear key
         /// </summary>
-        OEM_CLEAR = 0xFE,
+        OEM_CLEAR = 0xFE
     }
 
     internal enum ScanCodeShort : short
@@ -1205,7 +1204,7 @@ static partial class OSInterop
         ZOOM = 98,
         NONAME = 0,
         PA1 = 0,
-        OEM_CLEAR = 0,
+        OEM_CLEAR = 0
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1220,27 +1219,30 @@ static partial class OSInterop
     internal struct LowLevelKeyboardInputEvent
     {
         /// <summary>
-        /// A virtual-key code. The code must be a value in the range 1 to 254.
+        ///     A virtual-key code. The code must be a value in the range 1 to 254.
         /// </summary>
         public int VirtualCode;
 
         /// <summary>
-        /// A hardware scan code for the key.
+        ///     A hardware scan code for the key.
         /// </summary>
         public int HardwareScanCode;
 
         /// <summary>
-        /// The extended-key flag, event-injected Flags, context code, and transition-state flag. This member is specified as follows. An application can use the following values to test the keystroke Flags. Testing LLKHF_INJECTED (bit 4) will tell you whether the event was injected. If it was, then testing LLKHF_LOWER_IL_INJECTED (bit 1) will tell you whether or not the event was injected from a process running at lower integrity level.
+        ///     The extended-key flag, event-injected Flags, context code, and transition-state flag. This member is specified as
+        ///     follows. An application can use the following values to test the keystroke Flags. Testing LLKHF_INJECTED (bit 4)
+        ///     will tell you whether the event was injected. If it was, then testing LLKHF_LOWER_IL_INJECTED (bit 1) will tell you
+        ///     whether or not the event was injected from a process running at lower integrity level.
         /// </summary>
         public int Flags;
 
         /// <summary>
-        /// The time stamp for this message, equivalent to what GetMessageTime would return for this message.
+        ///     The time stamp for this message, equivalent to what GetMessageTime would return for this message.
         /// </summary>
         public int TimeStamp;
 
         /// <summary>
-        /// Additional information associated with the message.
+        ///     Additional information associated with the message.
         /// </summary>
         public IntPtr AdditionalInformation;
     }
