@@ -10,4 +10,10 @@
       <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="NHotkey" />
+      <PackageReference Include="NHotkey.Wpf" />
+      <PackageReference Include="WPF-UI" />
+    </ItemGroup>
+
 </Project>
