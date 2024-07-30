@@ -7,14 +7,15 @@ namespace ScreenGrab;
 
 public abstract class ScreenGrabber
 {
-    private static bool _isCapturing;
+    public static bool IsCapturing { get; private set; }
+
     public static Action<Bitmap>? OnCaptured { get; set; }
 
     public static void Capture(bool isPolyline = false)
     {
-        if (_isCapturing) return;
+        if (IsCapturing) return;
 
-        _isCapturing = true;
+        IsCapturing = true;
 
         var allDisplayInfos = DisplayInfo.AllDisplayInfos;
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
@@ -24,7 +25,7 @@ public abstract class ScreenGrabber
         {
             var view = new ScreenGrabView(OnCaptured, isPolyline)
             {
-                OnGrabClose = () => _isCapturing = false
+                OnGrabClose = () => IsCapturing = false
             };
             allScreenGrab.Add(view);
         }
