@@ -1,0 +1,43 @@
+name: .NET
+on:
+  release:
+    types: [ published ]
+  push:
+    tags:
+      - "*" # Push events to matching *, i.e. 1.0, 20.15.10
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        dotnet: [ '8.0.x' ]
+        os: [ windows-latest ]
+
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} - ${{ matrix.dotnet }}
+    env:
+      DOTNET_NOLOGO: true
+    
+    steps:
+      - name: Getting code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Clean
+        run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+
+      - name: Build
+        run: dotnet build --configuration Release --nologo
+
+#      - name: Run tests
+#        run: dotnet test --configuration Release --nologo
+
+      - name: Pack
+        run: dotnet pack
+
+      - name: Push
+        run: dotnet nuget push -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} artifacts\**.nupkg

@@ -5,18 +5,29 @@ using ScreenGrab.Extensions;
 
 namespace ScreenGrab;
 
-public class Grab
+public abstract class ScreenGrabber
 {
-    public Action<Bitmap>? OnImageCaptured { get; set; }
+    private static bool _isCapturing;
+    public static Action<Bitmap>? OnCaptured { get; set; }
 
-    public void Capture()
+    public static void Capture()
     {
+        if (_isCapturing) return;
+
+        _isCapturing = true;
+
         var allDisplayInfos = DisplayInfo.AllDisplayInfos;
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
         var numberOfScreenGrabWindowsToCreate = allDisplayInfos.Length - allScreenGrab.Count;
 
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
-            allScreenGrab.Add(new ScreenGrabView(OnImageCaptured));
+        {
+            var view = new ScreenGrabView(OnCaptured)
+            {
+                OnGrabClose = () => _isCapturing = false
+            };
+            allScreenGrab.Add(view);
+        }
 
         const double sideLength = 40;
 

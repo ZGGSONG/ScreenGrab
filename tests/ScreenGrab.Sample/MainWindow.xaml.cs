@@ -17,11 +17,8 @@ public partial class MainWindow
     {
         Clean();
 
-        var grab = new Grab
-        {
-            OnImageCaptured = bitmap => Img.Source = bitmap.ToImageSource()
-        };
-        grab.Capture();
+        ScreenGrabber.OnCaptured = bitmap => Img.Source = bitmap.ToImageSource();
+        ScreenGrabber.Capture();
     }
 
     private void Capture(object? sender, HotkeyEventArgs e)

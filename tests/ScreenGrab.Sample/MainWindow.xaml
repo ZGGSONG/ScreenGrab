@@ -18,8 +18,8 @@
         <ui:TitleBar Title="ScreenGrab Sample" />
         <ui:Card Grid.Row="1" Margin="8">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Capture" Margin="2 0" Click="Capture_Click" />
-                <Button Content="Clean" Margin="2 0" Click="Clean_Click" />
+                <Button Margin="2 0" Content="Capture(Win+Shift+A)" Click="Capture_Click" />
+                <Button Margin="2 0" Content="Clean" Click="Clean_Click" />
             </StackPanel>
         </ui:Card>
         <ui:DynamicScrollViewer Grid.Row="2" Margin="8">

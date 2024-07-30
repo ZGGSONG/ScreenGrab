@@ -12,6 +12,9 @@ using Size = System.Windows.Size;
 
 namespace ScreenGrab;
 
+/// <summary>
+///     Extracted from the project <see href="https://github.com/TheJoeFin/Text-Grab"/>
+/// </summary>
 public partial class ScreenGrabView
 {
     #region Constructors
@@ -26,6 +29,7 @@ public partial class ScreenGrabView
 
     #region Properties
 
+    public Action? OnGrabClose { get; set; }
     private DisplayInfo? CurrentScreen { get; set; }
 
     #endregion Properties
@@ -75,6 +79,7 @@ public partial class ScreenGrabView
         foreach (var window in Application.Current.Windows)
             if (window is ScreenGrabView sgv)
                 sgv.Close();
+        OnGrabClose?.Invoke();
     }
 
     private void FreezeUnfreezeAllScreenGrabs()

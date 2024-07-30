@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		README.md = README.md
 		Directory.Packages.props = Directory.Packages.props
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Sample", "tests\ScreenGrab.Sample\ScreenGrab.Sample.csproj", "{94390E18-11B6-413E-8571-BCE129F7B3D8}"

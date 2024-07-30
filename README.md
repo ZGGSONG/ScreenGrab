@@ -19,6 +19,10 @@ Install-Package ScreenGrab
 
 - [ScreenGrab](./src/ScreenGrab/README.md)
 
+### Notes
+
+This feature is extracted from[Text-Grab](https://github.com/TheJoeFin/Text-Grab)
+
 ### Contacts
 
 * [mail](mailto:zggsong@foxmail.com)
