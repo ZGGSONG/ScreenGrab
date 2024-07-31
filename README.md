@@ -2,8 +2,8 @@
 
 [![Language](https://img.shields.io/badge/language-C%23-blue.svg?style=flat-square)](https://github.com/ZGGSONG/ScreenGrab/search?l=C%23&o=desc&s=&type=Code)
 [![License](https://img.shields.io/github/license/ZGGSONG/ScreenGrab.svg?label=License&maxAge=86400)](LICENSE)
-[![Requirements](https://img.shields.io/badge/Requirements-.NET%20Standard%202.0-blue.svg)](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md)
-<!--[![Build Status](https://github.com/ZGGSONG/ScreenGrab/workflows/.NET/badge.svg?branch=master)](https://github.com/ZGGSONG/ScreenGrab/actions?query=workflow%3A%22.NET%22)-->
+[![Requirements](https://img.shields.io/badge/Requirements-.NET8.0/7.0/6.0_FRAMEWORK481/472-blue.svg)](https://github.com/dotnet/runtime)
+[![Build Status](https://github.com/ZGGSONG/ScreenGrab/workflows/.NET/badge.svg?branch=master)](https://github.com/ZGGSONG/ScreenGrab/actions/workflows/dotnet.yml?query=workflow%3A.NET)
 
 Description
 
@@ -21,7 +21,7 @@ Install-Package ScreenGrab
 
 ### Notes
 
-This feature is extracted from[Text-Grab](https://github.com/TheJoeFin/Text-Grab)
+This feature is extracted from [Text-Grab](https://github.com/TheJoeFin/Text-Grab)
 
 ### Contacts
 

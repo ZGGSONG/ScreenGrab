@@ -2,18 +2,18 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFrameworks>net8.0-windows;net7.0-windows;net6.0-windows;net481;net472</TargetFrameworks>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj" />
+        <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NHotkey" />
-      <PackageReference Include="NHotkey.Wpf" />
-      <PackageReference Include="WPF-UI" />
+        <PackageReference Include="NHotkey"/>
+        <PackageReference Include="NHotkey.Wpf"/>
+        <PackageReference Include="WPF-UI"/>
     </ItemGroup>
 
 </Project>

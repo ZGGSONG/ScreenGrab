@@ -11,9 +11,9 @@
                  Title="ScreenGrab Sample" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="38"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="38" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ui:TitleBar Title="ScreenGrab Sample" />
         <ui:Card Grid.Row="1" Margin="8">

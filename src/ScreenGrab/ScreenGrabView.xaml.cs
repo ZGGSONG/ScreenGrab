@@ -13,7 +13,7 @@ using Size = System.Windows.Size;
 namespace ScreenGrab;
 
 /// <summary>
-///     Extracted from the project <see href="https://github.com/TheJoeFin/Text-Grab"/>
+///     Extracted from the project <see href="https://github.com/TheJoeFin/Text-Grab" />
 /// </summary>
 public partial class ScreenGrabView
 {
@@ -74,7 +74,7 @@ public partial class ScreenGrabView
 #if DEBUG
         Topmost = false;
 #endif
-        
+
         if (!_isPolyline) return;
         SetPolylineVisibility(true);
         (HorizontalLine.X1, VerticalLine.Y1, (HorizontalLine.X2, VerticalLine.Y2)) = (0, 0, this.GetWidthHeight());
@@ -134,15 +134,12 @@ public partial class ScreenGrabView
     {
         if (BackgroundImage.Source == null)
         {
-            if (_isPolyline)
-            {
-                SetPolylineVisibility(false);
-            }
+            if (_isPolyline) SetPolylineVisibility(false);
             BackgroundBrush.Opacity = 0;
             await Task.Delay(150);
             SetImageToBackground();
-            
-            if (IsMouseOver)
+
+            if (this.IsMouseInWindow())
                 SetPolylineVisibility(_isPolyline);
         }
         else
@@ -165,23 +162,26 @@ public partial class ScreenGrabView
             if (window is ScreenGrabView sgv)
                 sgv.FreezeUnfreeze();
     }
-    
+
     private void FreezeBgImage()
     {
         BackgroundImage.Source?.Freeze();
         BackgroundImage.Source = null;
     }
-    
+
     private void SetPolylineVisibility(bool isVisible)
     {
-        HorizontalLine.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        VerticalLine.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        var setVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        if (HorizontalLine.Visibility == setVisibility && VerticalLine.Visibility == setVisibility)
+            return;
+        HorizontalLine.Visibility = setVisibility;
+        VerticalLine.Visibility = setVisibility;
     }
 
     #endregion
 
     #region Mouse Events
-    
+
     private void RegionClickCanvas_MouseLeave(object sender, MouseEventArgs e)
     {
         SetPolylineVisibility(false);
@@ -226,13 +226,12 @@ public partial class ScreenGrabView
         Canvas.SetLeft(_selectBorder, _clickedPoint.X);
         Canvas.SetTop(_selectBorder, _clickedPoint.Y);
 
-        DisplayInfo[] screens = DisplayInfo.AllDisplayInfos;
-        Point formsPoint = new((int)_clickedPoint.X, (int)_clickedPoint.Y);
-        foreach (var scr in screens)
+        WindowUtilities.GetMousePosition(out var mousePoint);
+        foreach (var screen in DisplayInfo.AllDisplayInfos)
         {
-            var bound = scr.ScaledBounds();
-            if (bound.Contains(formsPoint))
-                CurrentScreen = scr;
+            var bound = screen.ScaledBounds();
+            if (bound.Contains(mousePoint))
+                CurrentScreen = screen;
         }
     }
 
@@ -242,19 +241,19 @@ public partial class ScreenGrabView
 
         if (!_isSelecting)
         {
+            // Determine whether to update auxiliary line information based on configuration
+            if (!_isPolyline) return;
+
             // Update the horizontal line to match the mouse Y position
-            HorizontalLine.Y1 = movingPoint.Y;
-            HorizontalLine.Y2 = movingPoint.Y;
+            HorizontalLine.Y1 = HorizontalLine.Y2 = movingPoint.Y;
 
             // Update the vertical line to match the mouse X position
-            VerticalLine.X1 = movingPoint.X;
-            VerticalLine.X2 = movingPoint.X;
+            VerticalLine.X1 = VerticalLine.X2 = movingPoint.X;
             return;
         }
-        
+
         // Hide the lines
-        HorizontalLine.Visibility = Visibility.Collapsed;
-        VerticalLine.Visibility = Visibility.Collapsed;
+        SetPolylineVisibility(false);
 
         if (Keyboard.Modifiers == ModifierKeys.Shift)
         {
@@ -321,7 +320,7 @@ public partial class ScreenGrabView
         var thisCorrectedLeft = (int)absPosPoint.X + regionScaled.Left;
         var thisCorrectedTop = (int)absPosPoint.Y + regionScaled.Top;
 
-        Rectangle correctedRegion = new(thisCorrectedLeft, thisCorrectedTop, regionScaled.Width, regionScaled.Height);
+        var correctedRegion = regionScaled with { X = thisCorrectedLeft, Y = thisCorrectedTop };
         var bitmap = correctedRegion.GetRegionOfScreenAsBitmap();
         _onImageCaptured?.Invoke(bitmap);
 
@@ -346,13 +345,22 @@ public partial class ScreenGrabView
 
         if (CurrentScreen is not null && _dpiScale is not null)
         {
-            double currentScreenLeft = CurrentScreen.Bounds.Left; // Should always be 0
+            double currentScreenLeft = 0;
+            double currentScreenTop = 0;
             var currentScreenRight = CurrentScreen.Bounds.Right / _dpiScale.Value.DpiScaleX;
-            double currentScreenTop = CurrentScreen.Bounds.Top; // Should always be 0
             var currentScreenBottom = CurrentScreen.Bounds.Bottom / _dpiScale.Value.DpiScaleY;
 
-            leftValue = Math.Clamp(leftValue, currentScreenLeft, currentScreenRight - _selectBorder.Width);
-            topValue = Math.Clamp(topValue, currentScreenTop, currentScreenBottom - _selectBorder.Height);
+            // If it is a secondary screen, recalculate the coordinates
+            if (CurrentScreen.Bounds.Left != 0 || CurrentScreen.Bounds.Top != 0)
+            {
+                currentScreenRight = (CurrentScreen.Bounds.Right + CurrentScreen.Bounds.Width) /
+                                     _dpiScale.Value.DpiScaleX;
+                currentScreenBottom = (CurrentScreen.Bounds.Bottom + CurrentScreen.Bounds.Height) /
+                                      _dpiScale.Value.DpiScaleY;
+            }
+
+            leftValue = Clamp(leftValue, currentScreenLeft, currentScreenRight - _selectBorder.Width);
+            topValue = Clamp(topValue, currentScreenTop, currentScreenBottom - _selectBorder.Height);
         }
 
         ClippingGeometry.Rect = new Rect(
@@ -360,6 +368,17 @@ public partial class ScreenGrabView
             new Size(_selectBorder.Width - 2, _selectBorder.Height - 2));
         Canvas.SetLeft(_selectBorder, leftValue - 1);
         Canvas.SetTop(_selectBorder, topValue - 1);
+    }
+
+    public double Clamp(double value, double min, double max)
+    {
+#if NETFRAMEWORK
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+#else
+        return Math.Clamp(value, min, max);
+#endif
     }
 
     #endregion
