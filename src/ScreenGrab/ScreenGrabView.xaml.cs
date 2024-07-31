@@ -350,17 +350,8 @@ public partial class ScreenGrabView
         {
             double currentScreenLeft = 0;
             double currentScreenTop = 0;
-            var currentScreenRight = CurrentScreen.Bounds.Right / _dpiScale.Value.DpiScaleX;
-            var currentScreenBottom = CurrentScreen.Bounds.Bottom / _dpiScale.Value.DpiScaleY;
-
-            // If it is a secondary screen, recalculate the coordinates
-            if (CurrentScreen.Bounds.Left != 0 || CurrentScreen.Bounds.Top != 0)
-            {
-                currentScreenRight = (CurrentScreen.Bounds.Right + CurrentScreen.Bounds.Width) /
-                                     _dpiScale.Value.DpiScaleX;
-                currentScreenBottom = (CurrentScreen.Bounds.Bottom + CurrentScreen.Bounds.Height) /
-                                      _dpiScale.Value.DpiScaleY;
-            }
+            var currentScreenRight = CurrentScreen.Bounds.Width / _dpiScale.Value.DpiScaleX;
+            var currentScreenBottom = CurrentScreen.Bounds.Height / _dpiScale.Value.DpiScaleY;
 
             leftValue = Clamp(leftValue, currentScreenLeft, currentScreenRight - _selectBorder.Width);
             topValue = Clamp(topValue, currentScreenTop, currentScreenBottom - _selectBorder.Height);
