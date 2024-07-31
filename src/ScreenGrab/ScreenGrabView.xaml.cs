@@ -76,8 +76,11 @@ public partial class ScreenGrabView
 #endif
 
         if (!_isPolyline) return;
-        SetPolylineVisibility(true);
         (HorizontalLine.X1, VerticalLine.Y1, (HorizontalLine.X2, VerticalLine.Y2)) = (0, 0, this.GetWidthHeight());
+        
+        // Set the polyline to be visible when the mouse in the window
+        if (this.IsMouseInWindow())
+            SetPolylineVisibility(true);
     }
 
     private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -205,8 +208,8 @@ public partial class ScreenGrabView
         RegionClickCanvas.CaptureMouse();
         CursorClipper.ClipCursor(this);
         _clickedPoint = e.GetPosition(this);
-        _selectBorder.Height = 1;
-        _selectBorder.Width = 1;
+        _selectBorder.Height = 2;
+        _selectBorder.Width = 2;
 
         _dpiScale = VisualTreeHelper.GetDpi(this);
 

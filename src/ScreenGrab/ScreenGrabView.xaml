@@ -46,11 +46,13 @@
             <!-- Horizontal Line -->
             <Line x:Name="HorizontalLine"
                   Stroke="#92caf4"
-                  StrokeThickness="1" />
+                  StrokeThickness="1"
+                  Visibility="Collapsed" />
             <!-- Vertical Line -->
             <Line x:Name="VerticalLine"
                   Stroke="#92caf4"
-                  StrokeThickness="1" />
+                  StrokeThickness="1"
+                  Visibility="Collapsed" />
         </Canvas>
     </Grid>
 </Window>

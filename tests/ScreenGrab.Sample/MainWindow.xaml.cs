@@ -20,6 +20,7 @@ public partial class MainWindow
         ScreenGrabber.OnCaptured = bitmap =>
         {
             Img.Source = bitmap.ToImageSource();
+            WindowState = WindowState.Normal;
             Activate();
         };
         ScreenGrabber.Capture(PolylineCb.IsChecked ?? false);
