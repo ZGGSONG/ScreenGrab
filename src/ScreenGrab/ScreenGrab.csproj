@@ -9,5 +9,16 @@
     <ItemGroup>
         <PackageReference Include="Dapplo.Windows.User32"/>
     </ItemGroup>
+    
+    <PropertyGroup Label="Nuget">
+        <Version>1.0.1</Version>
+        <Description>ScreenGrab</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>ScreenGrab;Screenshot;WPF</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup Label="Nuget">
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 
 </Project>
