@@ -4,7 +4,7 @@
 
 ```csharp
 BitmapSource bs;
-bool isPolyline = true; // Open auxiliary lines
+bool isAuxiliary = true; // Open auxiliary lines
 ScreenGrabber.OnCaptured = bitmap => bs = bitmap.ToImageSource();
-ScreenGrabber.Capture(isPolyline);
+ScreenGrabber.Capture(isAuxiliary);
 ```

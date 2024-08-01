@@ -11,7 +11,7 @@ public abstract class ScreenGrabber
 
     public static Action<Bitmap>? OnCaptured { get; set; }
 
-    public static void Capture(bool isPolyline = false)
+    public static void Capture(bool isAuxiliary = false)
     {
         if (IsCapturing) return;
 
@@ -23,7 +23,7 @@ public abstract class ScreenGrabber
 
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
         {
-            var view = new ScreenGrabView(OnCaptured, isPolyline)
+            var view = new ScreenGrabView(OnCaptured, isAuxiliary)
             {
                 OnGrabClose = () => IsCapturing = false
             };

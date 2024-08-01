@@ -19,11 +19,11 @@ public partial class ScreenGrabView
 {
     #region Constructors
 
-    public ScreenGrabView(Action<Bitmap>? action, bool isPolyline = false)
+    public ScreenGrabView(Action<Bitmap>? action, bool isAuxiliary = false)
     {
         InitializeComponent();
         _onImageCaptured = action;
-        _isPolyline = isPolyline;
+        _isAuxiliary = isAuxiliary;
     }
 
     #endregion Constructors
@@ -49,7 +49,7 @@ public partial class ScreenGrabView
     private double _yShiftDelta;
 
     private readonly Action<Bitmap>? _onImageCaptured;
-    private readonly bool _isPolyline;
+    private readonly bool _isAuxiliary;
 
     #endregion Fields
 
@@ -75,12 +75,12 @@ public partial class ScreenGrabView
         Topmost = false;
 #endif
 
-        if (!_isPolyline) return;
+        if (!_isAuxiliary) return;
         (HorizontalLine.X1, VerticalLine.Y1, (HorizontalLine.X2, VerticalLine.Y2)) = (0, 0, this.GetWidthHeight());
         
-        // Set the polyline to be visible when the mouse in the window
+        // Set the Auxiliary to be visible when the mouse in the window
         if (this.IsMouseInWindow())
-            SetPolylineVisibility(true);
+            SetAuxiliaryVisibility(true);
     }
 
     private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -137,13 +137,13 @@ public partial class ScreenGrabView
     {
         if (BackgroundImage.Source == null)
         {
-            if (_isPolyline) SetPolylineVisibility(false);
+            if (_isAuxiliary) SetAuxiliaryVisibility(false);
             BackgroundBrush.Opacity = 0;
             await Task.Delay(150);
             SetImageToBackground();
 
             if (this.IsMouseInWindow())
-                SetPolylineVisibility(_isPolyline);
+                SetAuxiliaryVisibility(_isAuxiliary);
         }
         else
         {
@@ -172,7 +172,7 @@ public partial class ScreenGrabView
         BackgroundImage.Source = null;
     }
 
-    private void SetPolylineVisibility(bool isVisible)
+    private void SetAuxiliaryVisibility(bool isVisible)
     {
         var setVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         if (HorizontalLine.Visibility == setVisibility && VerticalLine.Visibility == setVisibility)
@@ -187,12 +187,12 @@ public partial class ScreenGrabView
 
     private void RegionClickCanvas_MouseLeave(object sender, MouseEventArgs e)
     {
-        SetPolylineVisibility(false);
+        SetAuxiliaryVisibility(false);
     }
 
     private void RegionClickCanvas_MouseEnter(object sender, MouseEventArgs e)
     {
-        SetPolylineVisibility(_isPolyline);
+        SetAuxiliaryVisibility(_isAuxiliary);
     }
 
     private void RegionClickCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -205,6 +205,8 @@ public partial class ScreenGrabView
         }
 
         _isSelecting = true;
+        // Hide the lines
+        SetAuxiliaryVisibility(false);
         RegionClickCanvas.CaptureMouse();
         CursorClipper.ClipCursor(this);
         _clickedPoint = e.GetPosition(this);
@@ -245,7 +247,7 @@ public partial class ScreenGrabView
         if (!_isSelecting)
         {
             // Determine whether to update auxiliary line information based on configuration
-            if (!_isPolyline) return;
+            if (!_isAuxiliary) return;
 
             // Update the horizontal line to match the mouse Y position
             HorizontalLine.Y1 = HorizontalLine.Y2 = movingPoint.Y;
@@ -254,9 +256,6 @@ public partial class ScreenGrabView
             VerticalLine.X1 = VerticalLine.X2 = movingPoint.X;
             return;
         }
-
-        // Hide the lines
-        SetPolylineVisibility(false);
 
         if (Keyboard.Modifiers == ModifierKeys.Shift)
         {

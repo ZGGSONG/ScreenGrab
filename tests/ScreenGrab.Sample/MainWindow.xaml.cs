@@ -23,7 +23,7 @@ public partial class MainWindow
             WindowState = WindowState.Normal;
             Activate();
         };
-        ScreenGrabber.Capture(PolylineCb.IsChecked ?? false);
+        ScreenGrabber.Capture(AuxiliaryCb.IsChecked ?? false);
     }
 
     private void Capture(object? sender, HotkeyEventArgs e)
