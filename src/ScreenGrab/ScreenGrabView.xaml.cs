@@ -41,12 +41,15 @@ public partial class ScreenGrabView
     private DpiScale? _dpiScale;
     private bool _isSelecting;
     private bool _isShiftDown;
-    private readonly Border _selectBorder = new();
     private double _selectLeft;
     private double _selectTop;
     private Point _shiftPoint;
     private double _xShiftDelta;
     private double _yShiftDelta;
+    
+    private readonly Border _selectBorder = new();
+    private readonly int _borderThickness = 2;
+    private readonly Color _borderColor = Color.FromArgb(255, 146, 202, 244);
 
     private readonly Action<Bitmap>? _onImageCaptured;
     private readonly bool _isAuxiliary;
@@ -106,7 +109,7 @@ public partial class ScreenGrabView
         switch (e.Key)
         {
             case Key.Escape:
-                CloseAllFullscreenGrabs();
+                CloseAllScreenGrabs();
                 break;
             case Key.F:
                 FreezeUnfreezeAllScreenGrabs();
@@ -151,7 +154,7 @@ public partial class ScreenGrabView
         }
     }
 
-    private void CloseAllFullscreenGrabs()
+    private void CloseAllScreenGrabs()
     {
         foreach (var window in Application.Current.Windows)
             if (window is ScreenGrabView sgv)
@@ -200,7 +203,7 @@ public partial class ScreenGrabView
         // Right click to close
         if (e.RightButton == MouseButtonState.Pressed)
         {
-            CloseAllFullscreenGrabs();
+            CloseAllScreenGrabs();
             return;
         }
 
@@ -224,9 +227,8 @@ public partial class ScreenGrabView
             // ignored
         }
 
-        _selectBorder.BorderThickness = new Thickness(2);
-        var borderColor = Color.FromArgb(255, 146, 202, 244);
-        _selectBorder.BorderBrush = new SolidColorBrush(borderColor);
+        _selectBorder.BorderThickness = new Thickness(_borderThickness);
+        _selectBorder.BorderBrush = new SolidColorBrush(_borderColor);
         _ = RegionClickCanvas.Children.Add(_selectBorder);
         Canvas.SetLeft(_selectBorder, _clickedPoint.X);
         Canvas.SetTop(_selectBorder, _clickedPoint.Y);
@@ -282,7 +284,7 @@ public partial class ScreenGrabView
 
     private void RegionClickCanvas_MouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (!_isSelecting)
+        if (!_isSelecting || _dpiScale is null)
             return;
 
         _isSelecting = false;
@@ -291,22 +293,14 @@ public partial class ScreenGrabView
         RegionClickCanvas.ReleaseMouseCapture();
         ClippingGeometry.Rect = new Rect(new Point(0, 0), new Size(0, 0));
 
-        var movingPoint = e.GetPosition(this);
-        var m = PresentationSource.FromVisual(this)!.CompositionTarget!.TransformToDevice;
-        movingPoint.X *= m.M11;
-        movingPoint.Y *= m.M22;
-
-        movingPoint.X = Math.Round(movingPoint.X);
-        movingPoint.Y = Math.Round(movingPoint.Y);
-
-        var xDimScaled = Canvas.GetLeft(_selectBorder) * m.M11;
-        var yDimScaled = Canvas.GetTop(_selectBorder) * m.M22;
+        var xDimScaled = Canvas.GetLeft(_selectBorder) * _dpiScale.Value.DpiScaleX;
+        var yDimScaled = Canvas.GetTop(_selectBorder) * _dpiScale.Value.DpiScaleY;
 
         Rectangle regionScaled = new(
             (int)xDimScaled,
             (int)yDimScaled,
-            (int)(_selectBorder.Width * m.M11),
-            (int)(_selectBorder.Height * m.M22));
+            (int)(_selectBorder.Width * _dpiScale.Value.DpiScaleX),
+            (int)(_selectBorder.Height * _dpiScale.Value.DpiScaleY));
 
         try
         {
@@ -326,7 +320,7 @@ public partial class ScreenGrabView
         var bitmap = correctedRegion.GetRegionOfScreenAsBitmap();
         _onImageCaptured?.Invoke(bitmap);
 
-        CloseAllFullscreenGrabs();
+        CloseAllScreenGrabs();
     }
 
     private void PanSelection(Point movingPoint)
@@ -363,7 +357,7 @@ public partial class ScreenGrabView
         Canvas.SetTop(_selectBorder, topValue - 1);
     }
 
-    public double Clamp(double value, double min, double max)
+    private double Clamp(double value, double min, double max)
     {
 #if NETFRAMEWORK
         if (value < min) return min;
