@@ -48,7 +48,7 @@ public partial class ScreenGrabView
     private double _yShiftDelta;
     
     private readonly Border _selectBorder = new();
-    private readonly int _borderThickness = 2;
+    private const double SelectBorderThickness = 2;
     private readonly Color _borderColor = Color.FromArgb(255, 146, 202, 244);
 
     private readonly Action<Bitmap>? _onImageCaptured;
@@ -227,7 +227,7 @@ public partial class ScreenGrabView
             // ignored
         }
 
-        _selectBorder.BorderThickness = new Thickness(_borderThickness);
+        _selectBorder.BorderThickness = new Thickness(SelectBorderThickness);
         _selectBorder.BorderBrush = new SolidColorBrush(_borderColor);
         _ = RegionClickCanvas.Children.Add(_selectBorder);
         Canvas.SetLeft(_selectBorder, _clickedPoint.X);
@@ -294,15 +294,15 @@ public partial class ScreenGrabView
         ClippingGeometry.Rect = new Rect(new Point(0, 0), new Size(0, 0));
 
         // Get the scaled dimensions of the selection border except the border thickness
-        var xDimScaled = (Canvas.GetLeft(_selectBorder) + _borderThickness) * _dpiScale.Value.DpiScaleX;
-        var yDimScaled = (Canvas.GetTop(_selectBorder) + _borderThickness) * _dpiScale.Value.DpiScaleY;
+        var xDimScaled = (Canvas.GetLeft(_selectBorder) + SelectBorderThickness) * _dpiScale.Value.DpiScaleX;
+        var yDimScaled = (Canvas.GetTop(_selectBorder) + SelectBorderThickness) * _dpiScale.Value.DpiScaleY;
 
         // Get the scaled dimensions of the selection border except the border thickness
         Rectangle regionScaled = new(
             (int)xDimScaled,
             (int)yDimScaled,
-            (int)((_selectBorder.Width - 2 * _borderThickness) * _dpiScale.Value.DpiScaleX),
-            (int)((_selectBorder.Height - 2 * _borderThickness) * _dpiScale.Value.DpiScaleY));
+            (int)((_selectBorder.Width - 2 * SelectBorderThickness) * _dpiScale.Value.DpiScaleX),
+            (int)((_selectBorder.Height - 2 * SelectBorderThickness) * _dpiScale.Value.DpiScaleY));
 
         try
         {
