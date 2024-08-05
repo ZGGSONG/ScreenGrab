@@ -24,6 +24,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Sample", "tests\ScreenGrab.Sample\ScreenGrab.Sample.csproj", "{94390E18-11B6-413E-8571-BCE129F7B3D8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "licenses", "licenses", "{236BC4FF-8DE3-46AA-B16F-4182C9445B9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dapplo.Windows", "Dapplo.Windows", "{24C12491-C0D8-452D-A883-2D6CA5874965}"
+	ProjectSection(SolutionItems) = preProject
+		licenses\Dapplo.Windows\LICENSE = licenses\Dapplo.Windows\LICENSE
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text-Grab", "Text-Grab", "{C98416B8-1FF2-45B2-8D1F-8819CCDCF4F8}"
+	ProjectSection(SolutionItems) = preProject
+		licenses\Text-Grab\LICENSE = licenses\Text-Grab\LICENSE
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,5 +57,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{55CA74FB-99AF-4BD3-B81A-9D08C80822B1} = {6E5BF389-3D3F-4D74-9DD0-3B199CB529C5}
 		{94390E18-11B6-413E-8571-BCE129F7B3D8} = {9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}
+		{24C12491-C0D8-452D-A883-2D6CA5874965} = {236BC4FF-8DE3-46AA-B16F-4182C9445B9F}
+		{C98416B8-1FF2-45B2-8D1F-8819CCDCF4F8} = {236BC4FF-8DE3-46AA-B16F-4182C9445B9F}
 	EndGlobalSection
 EndGlobal

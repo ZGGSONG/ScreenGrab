@@ -12,9 +12,10 @@
     
     <PropertyGroup Label="Nuget">
         <Version>1.0.1</Version>
-        <Description>ScreenGrab</Description>
+        <Title>ScreenGrab</Title>
+        <Description>ScreenGrab extracted from Text-Grab</Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>ScreenGrab;Screenshot;WPF</PackageTags>
+        <PackageTags>ScreenGrab;Screenshot;WPF;Text-Grab</PackageTags>
     </PropertyGroup>
 
     <ItemGroup Label="Nuget">
