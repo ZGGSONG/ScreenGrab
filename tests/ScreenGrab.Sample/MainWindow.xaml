@@ -3,8 +3,9 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 mc:Ignorable="d"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:tray="http://schemas.lepo.co/wpfui/2022/xaml/tray"
+                 mc:Ignorable="d"
                  Loaded="MainWindow_OnLoaded"
                  Unloaded="MainWindow_OnUnloaded"
                  WindowStartupLocation="CenterScreen"
@@ -16,6 +17,31 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ui:TitleBar Title="ScreenGrab Sample" />
+        <tray:NotifyIcon Grid.Row="0"
+                         FocusOnLeftClick="True"
+                         Icon="nuget.png"
+                         LeftClick="NotifyIcon_OnLeftClick"
+                         MenuOnRightClick="True"
+                         TooltipText="ScreenGrab.Sample">
+            <tray:NotifyIcon.Menu>
+                <ContextMenu>
+                    <MenuItem Header="Grab"
+                              Click="Capture_Click"
+                              InputGestureText="Win+Shift+A">
+                        <MenuItem.Icon>
+                            <ui:SymbolIcon Symbol="Screenshot24" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Exit"
+                              Click="MenuItem_OnClick">
+                        <MenuItem.Icon>
+                            <ui:SymbolIcon Symbol="PictureInPictureExit24" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </tray:NotifyIcon.Menu>
+        </tray:NotifyIcon>
         <ui:Card Grid.Row="1" Margin="8">
             <StackPanel Orientation="Horizontal">
                 <Button Margin="2 0" Content="Capture(Win+Shift+A)" Click="Capture_Click" />

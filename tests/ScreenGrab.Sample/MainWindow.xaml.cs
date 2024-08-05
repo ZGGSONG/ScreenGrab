@@ -1,8 +1,10 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 using NHotkey;
 using NHotkey.Wpf;
 using ScreenGrab.Extensions;
+using Wpf.Ui.Tray.Controls;
 
 namespace ScreenGrab.Sample;
 
@@ -20,7 +22,10 @@ public partial class MainWindow
         ScreenGrabber.OnCaptured = bitmap =>
         {
             Img.Source = bitmap.ToImageSource();
-            WindowState = WindowState.Normal;
+            if (WindowState != WindowState.Normal)
+                WindowState = WindowState.Normal;
+            if (!IsVisible)
+                Show();
             Activate();
         };
         ScreenGrabber.Capture(AuxiliaryCb.IsChecked ?? false);
@@ -56,5 +61,22 @@ public partial class MainWindow
     private void MainWindow_OnUnloaded(object sender, RoutedEventArgs e)
     {
         HotkeyManager.Current.Remove("Capture");
+    }
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        e.Cancel = true;
+        Hide();
+    }
+
+    private void NotifyIcon_OnLeftClick(NotifyIcon sender, RoutedEventArgs e)
+    {
+        Show();
+        Activate();
+    }
+
+    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Shutdown();
     }
 }
