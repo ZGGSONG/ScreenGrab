@@ -272,12 +272,12 @@ public partial class ScreenGrabView
 
         _selectBorder.Height = Math.Max(_clickedPoint.Y, movingPoint.Y) - top;
         _selectBorder.Width = Math.Max(_clickedPoint.X, movingPoint.X) - left;
-        _selectBorder.Height += 2;
-        _selectBorder.Width += 2;
+        _selectBorder.Height += SelectBorderThickness;
+        _selectBorder.Width += SelectBorderThickness;
 
         ClippingGeometry.Rect = new Rect(
             new Point(left, top),
-            new Size(_selectBorder.Width - 2, _selectBorder.Height - 2));
+            new Size(_selectBorder.Width - SelectBorderThickness, _selectBorder.Height - SelectBorderThickness));
         Canvas.SetLeft(_selectBorder, left - 1);
         Canvas.SetTop(_selectBorder, top - 1);
     }
