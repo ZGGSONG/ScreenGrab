@@ -293,14 +293,16 @@ public partial class ScreenGrabView
         RegionClickCanvas.ReleaseMouseCapture();
         ClippingGeometry.Rect = new Rect(new Point(0, 0), new Size(0, 0));
 
-        var xDimScaled = Canvas.GetLeft(_selectBorder) * _dpiScale.Value.DpiScaleX;
-        var yDimScaled = Canvas.GetTop(_selectBorder) * _dpiScale.Value.DpiScaleY;
+        // Get the scaled dimensions of the selection border except the border thickness
+        var xDimScaled = (Canvas.GetLeft(_selectBorder) + _borderThickness) * _dpiScale.Value.DpiScaleX;
+        var yDimScaled = (Canvas.GetTop(_selectBorder) + _borderThickness) * _dpiScale.Value.DpiScaleY;
 
+        // Get the scaled dimensions of the selection border except the border thickness
         Rectangle regionScaled = new(
             (int)xDimScaled,
             (int)yDimScaled,
-            (int)(_selectBorder.Width * _dpiScale.Value.DpiScaleX),
-            (int)(_selectBorder.Height * _dpiScale.Value.DpiScaleY));
+            (int)((_selectBorder.Width - 2 * _borderThickness) * _dpiScale.Value.DpiScaleX),
+            (int)((_selectBorder.Height - 2 * _borderThickness) * _dpiScale.Value.DpiScaleY));
 
         try
         {
