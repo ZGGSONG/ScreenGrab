@@ -11,7 +11,7 @@
     </ItemGroup>
     
     <PropertyGroup Label="Nuget">
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Title>ScreenGrab</Title>
         <Description>ScreenGrab extracted from Text-Grab</Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
