@@ -8,7 +8,6 @@
         <PackageIcon>nuget.png</PackageIcon>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageLicenseUrl>https://github.com/ZGGSONG/ScreenGrab/blob/main/LICENSE</PackageLicenseUrl>
         <PackageOutputPath>$(NugetTargetDirectory)</PackageOutputPath>
         <PackageReleaseNotes>https://github.com/ZGGSONG/ScreenGrab/Releases</PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/ZGGSONG/ScreenGrab/</PackageProjectUrl>
