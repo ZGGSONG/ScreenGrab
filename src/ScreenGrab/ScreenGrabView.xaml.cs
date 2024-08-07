@@ -208,7 +208,6 @@ public partial class ScreenGrabView
         }
 
         _isSelecting = true;
-        // Hide the lines
         SetAuxiliaryVisibility(false);
         RegionClickCanvas.CaptureMouse();
         CursorClipper.ClipCursor(this);
@@ -232,7 +231,10 @@ public partial class ScreenGrabView
         _ = RegionClickCanvas.Children.Add(_selectBorder);
         Canvas.SetLeft(_selectBorder, _clickedPoint.X);
         Canvas.SetTop(_selectBorder, _clickedPoint.Y);
-
+        
+        // Initialize ClippingGeometry.Rect with a valid Rect
+        ClippingGeometry.Rect = new Rect(_clickedPoint, new Size(0, 0));        
+        
         WindowUtilities.GetMousePosition(out var mousePoint);
         foreach (var screen in DisplayInfo.AllDisplayInfos)
         {
