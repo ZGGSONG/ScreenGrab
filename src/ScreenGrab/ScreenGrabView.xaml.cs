@@ -322,9 +322,9 @@ public partial class ScreenGrabView
 
         var correctedRegion = regionScaled with { X = thisCorrectedLeft, Y = thisCorrectedTop };
         var bitmap = correctedRegion.GetRegionOfScreenAsBitmap();
-        _onImageCaptured?.Invoke(bitmap);
-
         CloseAllScreenGrabs();
+
+        _onImageCaptured?.Invoke(bitmap);
     }
 
     private void PanSelection(Point movingPoint)
