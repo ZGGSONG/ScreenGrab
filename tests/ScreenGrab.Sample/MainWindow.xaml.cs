@@ -27,6 +27,14 @@ public partial class MainWindow
             if (!IsVisible)
                 Show();
             Activate();
+
+            var bytes = ImageUtilities.ConvertBitmap2Bytes(bitmap);
+            // Do something with the bytes
+            var base64Str = Convert.ToBase64String(bytes);
+            // 计算base64Str的长度
+            var length = base64Str.Length;
+            var size = ImageUtilities.CountSize(length);
+            Console.WriteLine("Image Size: " + size);
         };
         ScreenGrabber.Capture(AuxiliaryCb.IsChecked ?? false);
     }
