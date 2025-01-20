@@ -46,7 +46,9 @@ public partial class ScreenGrabView
     private Point _shiftPoint;
     private double _xShiftDelta;
     private double _yShiftDelta;
-    
+    private Point _promptMsgTopLeft;
+    private Point _promptMsgBottomRight;
+
     private readonly Border _selectBorder = new();
     private const double SelectBorderThickness = 2;
     private readonly Color _borderColor = Color.FromArgb(255, 146, 202, 244);
@@ -77,6 +79,9 @@ public partial class ScreenGrabView
 #if DEBUG
         Topmost = false;
 #endif
+
+        if (this.IsMouseInWindow())
+            SetPromptMsgVisibility(true);
 
         if (!_isAuxiliary) return;
         (HorizontalLine.X1, VerticalLine.Y1, (HorizontalLine.X2, VerticalLine.Y2)) = (0, 0, this.GetWidthHeight());
@@ -141,12 +146,16 @@ public partial class ScreenGrabView
         if (BackgroundImage.Source == null)
         {
             if (_isAuxiliary) SetAuxiliaryVisibility(false);
+            SetPromptMsgVisibility(false);
             BackgroundBrush.Opacity = 0;
             await Task.Delay(150);
             SetImageToBackground();
 
             if (this.IsMouseInWindow())
+            {
                 SetAuxiliaryVisibility(_isAuxiliary);
+                SetPromptMsgVisibility(true);
+            }
         }
         else
         {
@@ -184,6 +193,15 @@ public partial class ScreenGrabView
         VerticalLine.Visibility = setVisibility;
     }
 
+    private void SetPromptMsgVisibility(bool isVisible)
+    {
+        var setVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        if (PromptMsg.Visibility == setVisibility)
+            return;
+
+        PromptMsg.Visibility = setVisibility;
+    }
+
     #endregion
 
     #region Mouse Events
@@ -191,11 +209,17 @@ public partial class ScreenGrabView
     private void RegionClickCanvas_MouseLeave(object sender, MouseEventArgs e)
     {
         SetAuxiliaryVisibility(false);
+        SetPromptMsgVisibility(false);
     }
 
     private void RegionClickCanvas_MouseEnter(object sender, MouseEventArgs e)
     {
         SetAuxiliaryVisibility(_isAuxiliary);
+        SetPromptMsgVisibility(true);
+
+        // 获取 PromptMsg 控件的边界
+        _promptMsgTopLeft = PromptMsg.TranslatePoint(new Point(0, 0), this);
+        _promptMsgBottomRight = PromptMsg.TranslatePoint(new Point(PromptMsg.ActualWidth, PromptMsg.ActualHeight), this);
     }
 
     private void RegionClickCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -209,6 +233,7 @@ public partial class ScreenGrabView
 
         _isSelecting = true;
         SetAuxiliaryVisibility(false);
+        SetPromptMsgVisibility(false);
         RegionClickCanvas.CaptureMouse();
         CursorClipper.ClipCursor(this);
         _clickedPoint = e.GetPosition(this);
@@ -250,6 +275,12 @@ public partial class ScreenGrabView
 
         if (!_isSelecting)
         {
+            // 检查鼠标是否在 PromptMsg 控件区域内
+            var isMouseInPromptMsg = movingPoint.X >= _promptMsgTopLeft.X && movingPoint.X <= _promptMsgBottomRight.X &&
+                                     movingPoint.Y >= _promptMsgTopLeft.Y && movingPoint.Y <= _promptMsgBottomRight.Y;
+
+            SetPromptMsgVisibility(!isMouseInPromptMsg);
+
             // Determine whether to update auxiliary line information based on configuration
             if (!_isAuxiliary) return;
 
