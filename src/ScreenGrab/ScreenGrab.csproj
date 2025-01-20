@@ -9,7 +9,7 @@
     <ItemGroup>
         <PackageReference Include="Dapplo.Windows.User32"/>
     </ItemGroup>
-    
+
     <PropertyGroup Label="Nuget">
         <Version>1.0.4</Version>
         <Title>ScreenGrab</Title>

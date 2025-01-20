@@ -62,6 +62,8 @@ public partial class ScreenGrabView
 
     private void Window_Closed(object? sender, EventArgs e)
     {
+        InputMethodOperate(false);
+
         Close();
 
         GC.Collect();
@@ -79,13 +81,14 @@ public partial class ScreenGrabView
 #if DEBUG
         Topmost = false;
 #endif
+        InputMethodOperate();
 
         if (this.IsMouseInWindow())
             SetPromptMsgVisibility(true);
 
         if (!_isAuxiliary) return;
         (HorizontalLine.X1, VerticalLine.Y1, (HorizontalLine.X2, VerticalLine.Y2)) = (0, 0, this.GetWidthHeight());
-        
+
         // Set the Auxiliary to be visible when the mouse in the window
         if (this.IsMouseInWindow())
             SetAuxiliaryVisibility(true);
@@ -145,7 +148,9 @@ public partial class ScreenGrabView
     {
         if (BackgroundImage.Source == null)
         {
-            if (_isAuxiliary) SetAuxiliaryVisibility(false);
+            if (_isAuxiliary)
+                SetAuxiliaryVisibility(false);
+
             SetPromptMsgVisibility(false);
             BackgroundBrush.Opacity = 0;
             await Task.Delay(150);
@@ -156,10 +161,15 @@ public partial class ScreenGrabView
                 SetAuxiliaryVisibility(_isAuxiliary);
                 SetPromptMsgVisibility(true);
             }
+
+            // 刷新提示词
+            FreezeTb.Text = "取消冻结窗口";
         }
         else
         {
             FreezeBgImage();
+            // 刷新提示词
+            FreezeTb.Text = "冻结窗口";
         }
     }
 
@@ -219,7 +229,8 @@ public partial class ScreenGrabView
 
         // 获取 PromptMsg 控件的边界
         _promptMsgTopLeft = PromptMsg.TranslatePoint(new Point(0, 0), this);
-        _promptMsgBottomRight = PromptMsg.TranslatePoint(new Point(PromptMsg.ActualWidth, PromptMsg.ActualHeight), this);
+        _promptMsgBottomRight =
+            PromptMsg.TranslatePoint(new Point(PromptMsg.ActualWidth, PromptMsg.ActualHeight), this);
     }
 
     private void RegionClickCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -256,10 +267,10 @@ public partial class ScreenGrabView
         _ = RegionClickCanvas.Children.Add(_selectBorder);
         Canvas.SetLeft(_selectBorder, _clickedPoint.X);
         Canvas.SetTop(_selectBorder, _clickedPoint.Y);
-        
+
         // Initialize ClippingGeometry.Rect with a valid Rect
-        ClippingGeometry.Rect = new Rect(_clickedPoint, new Size(0, 0));        
-        
+        ClippingGeometry.Rect = new Rect(_clickedPoint, new Size(0, 0));
+
         WindowUtilities.GetMousePosition(out var mousePoint);
         foreach (var screen in DisplayInfo.AllDisplayInfos)
         {
@@ -401,6 +412,25 @@ public partial class ScreenGrabView
 #else
         return Math.Clamp(value, min, max);
 #endif
+    }
+
+    private void InputMethodOperate(bool isDisableInputMethod = true)
+    {
+        if (isDisableInputMethod)
+        {
+            // 禁用输入法编辑器
+            InputMethod.SetIsInputMethodEnabled(this, false);
+            // 设置输入法状态为英文
+            InputMethod.SetPreferredImeState(this, InputMethodState.Off);
+            // 设置为英文输入模式
+            InputMethod.SetPreferredImeConversionMode(this, ImeConversionModeValues.Alphanumeric);
+        }
+        else
+        {
+            // 恢复输入法状态
+            InputMethod.SetIsInputMethodEnabled(this, true);
+            InputMethod.SetPreferredImeState(this, InputMethodState.DoNotCare);
+        }
     }
 
     #endregion
