@@ -48,6 +48,7 @@ public partial class ScreenGrabView
     private double _yShiftDelta;
     private Point _promptMsgTopLeft;
     private Point _promptMsgBottomRight;
+    private bool _isFreezeHandle;
 
     private readonly Border _selectBorder = new();
     private const double SelectBorderThickness = 2;
@@ -146,6 +147,7 @@ public partial class ScreenGrabView
 
     private async void FreezeUnfreeze()
     {
+        _isFreezeHandle = true;
         if (BackgroundImage.Source == null)
         {
             if (_isAuxiliary)
@@ -171,6 +173,7 @@ public partial class ScreenGrabView
             // 刷新提示词
             FreezeTb.Text = "冻结窗口";
         }
+        _isFreezeHandle = false;
     }
 
     private void CloseAllScreenGrabs()
@@ -282,6 +285,8 @@ public partial class ScreenGrabView
 
     private void RegionClickCanvas_MouseMove(object sender, MouseEventArgs e)
     {
+        if (_isFreezeHandle) return;
+
         var movingPoint = e.GetPosition(this);
 
         if (!_isSelecting)
