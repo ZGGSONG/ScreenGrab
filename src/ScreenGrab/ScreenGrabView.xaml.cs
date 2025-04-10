@@ -342,17 +342,7 @@ public partial class ScreenGrabView
         RegionClickCanvas.ReleaseMouseCapture();
         ClippingGeometry.Rect = new Rect(new Point(0, 0), new Size(0, 0));
 
-        // Get the scaled dimensions of the selection border except the border thickness
-        var xDimScaled = (Canvas.GetLeft(_selectBorder) + SelectBorderThickness) * _dpiScale.Value.DpiScaleX;
-        var yDimScaled = (Canvas.GetTop(_selectBorder) + SelectBorderThickness) * _dpiScale.Value.DpiScaleY;
-
-        // Get the scaled dimensions of the selection border except the border thickness
-        Rectangle regionScaled = new(
-            (int)xDimScaled,
-            (int)yDimScaled,
-            (int)((_selectBorder.Width - 2 * SelectBorderThickness) * _dpiScale.Value.DpiScaleX),
-            (int)((_selectBorder.Height - 2 * SelectBorderThickness) * _dpiScale.Value.DpiScaleY));
-
+        // 计算之前先移除边框
         try
         {
             RegionClickCanvas.Children.Remove(_selectBorder);
@@ -362,15 +352,38 @@ public partial class ScreenGrabView
             // ignored
         }
 
+        // 检查选择区域是否太小，如果是，则不截图
+        if (_selectBorder.Width <= 2 * SelectBorderThickness || _selectBorder.Height <= 2 * SelectBorderThickness)
+        {
+            CloseAllScreenGrabs(); // 即使不截图也关闭所有窗口
+            return;
+        }
+
+        // 计算实际的、经过DPI缩放的选择区域尺寸
+        var xDimScaled = (Canvas.GetLeft(_selectBorder) + SelectBorderThickness) * _dpiScale.Value.DpiScaleX;
+        var yDimScaled = (Canvas.GetTop(_selectBorder) + SelectBorderThickness) * _dpiScale.Value.DpiScaleY;
+
+        // 确保宽高至少为1像素
+        var scaledWidth = Math.Max(1, (_selectBorder.Width - 2 * SelectBorderThickness) * _dpiScale.Value.DpiScaleX);
+        var scaledHeight = Math.Max(1, (_selectBorder.Height - 2 * SelectBorderThickness) * _dpiScale.Value.DpiScaleY);
+
+        Rectangle regionScaled = new(
+            (int)xDimScaled,
+            (int)yDimScaled,
+            (int)scaledWidth,
+            (int)scaledHeight);
+
+        // 计算绝对屏幕位置
         var absPosPoint = this.GetAbsolutePosition();
+        var correctedRegion = regionScaled with
+        {
+            X = (int)absPosPoint.X + regionScaled.Left,
+            Y = (int)absPosPoint.Y + regionScaled.Top
+        };
 
-        var thisCorrectedLeft = (int)absPosPoint.X + regionScaled.Left;
-        var thisCorrectedTop = (int)absPosPoint.Y + regionScaled.Top;
-
-        var correctedRegion = regionScaled with { X = thisCorrectedLeft, Y = thisCorrectedTop };
+        // 截图并回调
         var bitmap = correctedRegion.GetRegionOfScreenAsBitmap();
         CloseAllScreenGrabs();
-
         _onImageCaptured?.Invoke(bitmap);
     }
 
