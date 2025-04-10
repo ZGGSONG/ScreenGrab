@@ -22,8 +22,13 @@ public partial class ScreenGrabView
     public ScreenGrabView(Action<Bitmap>? action, bool isAuxiliary = false)
     {
         InitializeComponent();
+        
+        ScreenGrabWindowManager.RegisterWindow(this);
+
         _onImageCaptured = action;
         _isAuxiliary = isAuxiliary;
+
+        Closed += (s, e) => ScreenGrabWindowManager.UnregisterWindow(this);
     }
 
     #endregion Constructors

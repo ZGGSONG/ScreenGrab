@@ -18,7 +18,7 @@ public abstract class ScreenGrabber
         IsCapturing = true;
 
         var allDisplayInfos = DisplayInfo.AllDisplayInfos;
-        var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
+        var allScreenGrab = GetScreenGrabWindows();
         var numberOfScreenGrabWindowsToCreate = allDisplayInfos.Length - allScreenGrab.Count;
 
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
@@ -46,6 +46,18 @@ public abstract class ScreenGrabber
 
             screenGrab.Show();
             screenGrab.Activate();
+        }
+    }
+
+    private static List<ScreenGrabView> GetScreenGrabWindows()
+    {
+        if (Application.Current != null) // 运行在 WPF 环境
+        {
+            return Application.Current.Windows.OfType<ScreenGrabView>().ToList();
+        }
+        else // 运行在 WinForms 环境
+        {
+            return ScreenGrabWindowManager.GetAllWindows();
         }
     }
 }

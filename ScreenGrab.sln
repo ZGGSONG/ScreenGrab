@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab", "src\ScreenGrab\ScreenGrab.csproj", "{55CA74FB-99AF-4BD3-B81A-9D08C80822B1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6E5BF389-3D3F-4D74-9DD0-3B199CB529C5}"
@@ -16,10 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
-		LICENSE = LICENSE
-		README.md = README.md
 		Directory.Packages.props = Directory.Packages.props
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Sample", "tests\ScreenGrab.Sample\ScreenGrab.Sample.csproj", "{94390E18-11B6-413E-8571-BCE129F7B3D8}"
@@ -36,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text-Grab", "Text-Grab", "{
 		licenses\Text-Grab\LICENSE = licenses\Text-Grab\LICENSE
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrab.Winform", "tests\ScreenGrab.Winform\ScreenGrab.Winform.csproj", "{A18027E4-EAB7-48BD-B0D0-653DCC6C1C44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +55,10 @@ Global
 		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94390E18-11B6-413E-8571-BCE129F7B3D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A18027E4-EAB7-48BD-B0D0-653DCC6C1C44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A18027E4-EAB7-48BD-B0D0-653DCC6C1C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A18027E4-EAB7-48BD-B0D0-653DCC6C1C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A18027E4-EAB7-48BD-B0D0-653DCC6C1C44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,5 +68,6 @@ Global
 		{94390E18-11B6-413E-8571-BCE129F7B3D8} = {9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}
 		{24C12491-C0D8-452D-A883-2D6CA5874965} = {236BC4FF-8DE3-46AA-B16F-4182C9445B9F}
 		{C98416B8-1FF2-45B2-8D1F-8819CCDCF4F8} = {236BC4FF-8DE3-46AA-B16F-4182C9445B9F}
+		{A18027E4-EAB7-48BD-B0D0-653DCC6C1C44} = {9CAA231D-7BE1-46C9-ACD6-EB2E569CEBEA}
 	EndGlobalSection
 EndGlobal
