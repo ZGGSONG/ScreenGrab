@@ -1,12 +1,13 @@
 <Project>
-    <PropertyGroup>
-        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageVersion Include="Dapplo.Windows.User32" Version="1.0.28"/>
-        <PackageVersion Include="NHotkey" Version="3.0.0"/>
-        <PackageVersion Include="NHotkey.Wpf" Version="3.0.0"/>
-        <PackageVersion Include="WPF-UI" Version="3.0.5"/>
-        <PackageVersion Include="WPF-UI.Tray" Version="3.0.5"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Dapplo.Windows.User32" Version="1.0.28" />
+    <PackageVersion Include="NHotkey" Version="3.0.0" />
+    <PackageVersion Include="NHotkey.Wpf" Version="3.0.0" />
+    <PackageVersion Include="WPF-UI" Version="3.0.5" />
+    <PackageVersion Include="WPF-UI.Tray" Version="3.0.5" />
+    <PackageVersion Include="WpfScreenHelper" Version="2.1.1" />
+  </ItemGroup>
 </Project>

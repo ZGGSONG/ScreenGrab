@@ -19,13 +19,13 @@ public abstract class ScreenGrabber
 
         IsCapturing = true;
 
-        var allDisplayInfos = DisplayInfo.AllDisplayInfos;
+        var allDisplayInfos = WpfScreenHelper.Screen.AllScreens;
 
         // 添加日志功能，将显示器信息写入文件
-        LogDisplayInfo(allDisplayInfos);
+        LogDisplayInfo(allDisplayInfos.ToList());
 
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
-        var numberOfScreenGrabWindowsToCreate = allDisplayInfos.Length - allScreenGrab.Count;
+        var numberOfScreenGrabWindowsToCreate = allDisplayInfos.Count() - allScreenGrab.Count;
 
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
         {
@@ -55,21 +55,21 @@ public abstract class ScreenGrabber
         }
     }
 
-    private static void LogDisplayInfo(DisplayInfo[] displayInfos)
+    private static void LogDisplayInfo(List<WpfScreenHelper.Screen> displayInfos)
     {
         try
         {
             string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "screen_grab_log.txt");
             StringBuilder logContent = new();
 
-            logContent.AppendLine($"[{DateTime.Now}] 捕获到显示器数量: {displayInfos.Length}");
+            logContent.AppendLine($"[{DateTime.Now}] 捕获到显示器数量: {displayInfos.Count()}");
 
-            for (int i = 0; i < displayInfos.Length; i++)
+            for (int i = 0; i < displayInfos.Count(); i++)
             {
                 var display = displayInfos[i];
                 logContent.AppendLine($"显示器 #{i + 1}:");
                 logContent.AppendLine($"  设备名称: {display.DeviceName}");
-                logContent.AppendLine($"  主显示器: {display.IsPrimary}");
+                logContent.AppendLine($"  主显示器: {display.Primary}");
                 // 添加更多显示器信息
                 logContent.AppendLine($"  坐标和尺寸信息:");
                 logContent.AppendLine($"    Bounds: X={display.Bounds.X}, Y={display.Bounds.Y}, 宽={display.Bounds.Width}, 高={display.Bounds.Height}");
@@ -80,11 +80,11 @@ public abstract class ScreenGrabber
                 var scaledBounds = display.ScaledBounds();
                 logContent.AppendLine($"    缩放后边界: X={scaledBounds.X}, Y={scaledBounds.Y}, 宽={scaledBounds.Width}, 高={scaledBounds.Height}");
 
-                var centerPoint = display.ScaledCenterPoint();
-                logContent.AppendLine($"    缩放后中心点: X={centerPoint.X}, Y={centerPoint.Y}");
+                //var centerPoint = display.ScaledCenterPoint();
+                //logContent.AppendLine($"    缩放后中心点: X={centerPoint.X}, Y={centerPoint.Y}");
 
                 // 尝试记录 DPI 缩放因子
-                //logContent.AppendLine($"    DPI缩放因子: {display.ScaleFactor}");
+                logContent.AppendLine($"    DPI缩放因子: {display.ScaledBounds()}({display.ScaleFactor})");
 
                 logContent.AppendLine();
             }
