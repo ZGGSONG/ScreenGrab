@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
-using System.IO;
 using System.Windows;
 using ScreenGrab.Extensions;
+using WpfScreenHelper;
 
 namespace ScreenGrab;
 
@@ -17,10 +17,10 @@ public abstract class ScreenGrabber
 
         IsCapturing = true;
 
-        var allDisplayInfos = WpfScreenHelper.Screen.AllScreens;
+        var allScreens = Screen.AllScreens;
 
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
-        var numberOfScreenGrabWindowsToCreate = allDisplayInfos.Count() - allScreenGrab.Count;
+        var numberOfScreenGrabWindowsToCreate = allScreens.Count() - allScreenGrab.Count;
 
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
         {
@@ -31,33 +31,20 @@ public abstract class ScreenGrabber
             allScreenGrab.Add(view);
         }
 
-        foreach (var (displayInfo, screenGrab) in allDisplayInfos.Zip(allScreenGrab,
+        foreach (var (screen, screenGrab) in allScreens.Zip(allScreenGrab,
                      (displayInfo, screenGrab) => (displayInfo, screenGrab)))
         {
             screenGrab.WindowStartupLocation = WindowStartupLocation.Manual;
             screenGrab.WindowState = WindowState.Normal;
+            var screenWithScaledBounds = screen.ScaledBounds();
 
-            screenGrab.Width = displayInfo.ScaledBounds().Width;
-            screenGrab.Height = displayInfo.ScaledBounds().Height;
-            screenGrab.Left = displayInfo.ScaledBounds().X;
-            screenGrab.Top = displayInfo.ScaledBounds().Y;
-
-            // 打印display信息及screengrab top left 宽高
-            Log($"显示器 #{allDisplayInfos.ToList().IndexOf(displayInfo) + 1}:");
-            Log($"  设备名称: {displayInfo.DeviceName}");
-            Log($"  主显示器: {displayInfo.Primary}");
-            Log($"  缩放比例: {displayInfo.ScaleFactor}");
-            Log($"  工作区: X={displayInfo.WorkingArea.X}, Y={displayInfo.WorkingArea.Y}, 宽={displayInfo.WorkingArea.Width}, 高={displayInfo.WorkingArea.Height}");
-            Log($"★ 缩放后边界: X={displayInfo.ScaledBounds().X}, Y={displayInfo.ScaledBounds().Y}, 宽={displayInfo.ScaledBounds().Width}, 高={displayInfo.ScaledBounds().Height}");
+            screenGrab.Width = screenWithScaledBounds.Width;
+            screenGrab.Height = screenWithScaledBounds.Height;
+            screenGrab.Left = screenWithScaledBounds.X;
+            screenGrab.Top = screenWithScaledBounds.Y;
 
             screenGrab.Show();
             screenGrab.Activate();
         }
-    }
-
-    private static void Log(string content)
-    {
-        string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "screen_grab_log.txt");
-        File.AppendAllText(logPath, $"{content}\r\n");
     }
 }

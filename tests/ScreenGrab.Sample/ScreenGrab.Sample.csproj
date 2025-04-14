@@ -9,6 +9,10 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+	</PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj"/>

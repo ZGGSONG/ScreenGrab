@@ -3,9 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Dapplo.Windows.User32;
 using ScreenGrab.Extensions;
 using ScreenGrab.Utilities;
+using WpfScreenHelper;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
@@ -31,7 +31,7 @@ public partial class ScreenGrabView
     #region Properties
 
     public Action? OnGrabClose { get; set; }
-    private DisplayInfo? CurrentScreen { get; set; }
+    private Screen? CurrentScreen { get; set; }
 
     #endregion Properties
 
@@ -275,7 +275,7 @@ public partial class ScreenGrabView
         ClippingGeometry.Rect = new Rect(_clickedPoint, new Size(0, 0));
 
         WindowUtilities.GetMousePosition(out var mousePoint);
-        foreach (var screen in DisplayInfo.AllDisplayInfos)
+        foreach (var screen in Screen.AllScreens)
         {
             var bound = screen.ScaledBounds();
             if (bound.Contains(mousePoint))

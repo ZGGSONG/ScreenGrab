@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0-windows;net7.0-windows;net6.0-windows;net481;net472</TargetFrameworks>
+        <TargetFrameworks>net8.0-windows;net481;net472</TargetFrameworks>
         <UseWPF>true</UseWPF>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapplo.Windows.User32" />
+        <PackageReference Include="System.Drawing.Common" />
         <PackageReference Include="WpfScreenHelper" />
     </ItemGroup>
 
