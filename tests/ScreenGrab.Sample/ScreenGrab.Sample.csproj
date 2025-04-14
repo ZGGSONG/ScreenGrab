@@ -5,6 +5,10 @@
         <TargetFrameworks>net8.0-windows</TargetFrameworks>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+	</PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj"/>
