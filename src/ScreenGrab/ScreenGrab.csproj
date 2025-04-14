@@ -7,7 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapplo.Windows.User32"/>
+        <PackageReference Include="Dapplo.Windows.User32" />
+        <PackageReference Include="WpfScreenHelper" />
     </ItemGroup>
 
     <PropertyGroup Label="Nuget">
@@ -19,7 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup Label="Nuget">
-        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
