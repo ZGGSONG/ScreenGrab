@@ -15,20 +15,49 @@ public partial class MainWindow
         InitializeComponent();
     }
 
-    private void Capture()
+    private async void Capture()
     {
         Clean();
 
-        ScreenGrabber.OnCaptured = bitmap =>
-        {
-            Img.Source = bitmap.ToImageSource();
-            if (WindowState != WindowState.Normal)
-                WindowState = WindowState.Normal;
-            if (!IsVisible)
-                Show();
-            Activate();
-        };
-        ScreenGrabber.Capture(AuxiliaryCb.IsChecked ?? false);
+        // 1. 回调等待结果
+        //ScreenGrabber.OnCaptured = bitmap =>
+        //{
+        //    Img.Source = bitmap.ToImageSource();
+        //    if (WindowState != WindowState.Normal)
+        //        WindowState = WindowState.Normal;
+        //    if (!IsVisible)
+        //        Show();
+        //    Activate();
+        //};
+        //ScreenGrabber.Capture(AuxiliaryCb.IsChecked ?? false);
+
+        // 2. 同步获取结果（类似Dialog）
+        //var bitmap = ScreenGrabber.CaptureDialog(AuxiliaryCb.IsChecked ?? false);
+
+        //// 如果用户取消截图，bitmap 将为 null
+        //if (bitmap is null)
+        //    return;
+
+        //Img.Source = bitmap.ToImageSource();
+        //if (WindowState != WindowState.Normal)
+        //    WindowState = WindowState.Normal;
+        //if (!IsVisible)
+        //    Show();
+        //Activate();
+
+        // 3. 异步获取结果
+        var bitmap = await ScreenGrabber.CaptureAsync(AuxiliaryCb.IsChecked ?? false);
+
+        // 如果用户取消截图，bitmap 将为 null
+        if (bitmap is null)
+            return;
+
+        Img.Source = bitmap.ToImageSource();
+        if (WindowState != WindowState.Normal)
+            WindowState = WindowState.Normal;
+        if (!IsVisible)
+            Show();
+        Activate();
     }
 
     private void Capture(object? sender, HotkeyEventArgs e)
