@@ -140,7 +140,9 @@ public abstract class ScreenGrabber
                 OnGrabClose = () =>
                 {
                     IsCapturing = false;
-                    // 用户取消时，返回 null 完成任务
+                },
+                OnCancel = () =>
+                {
                     _captureTaskCompletionSource?.TrySetResult(null);
                 }
             };

@@ -31,6 +31,7 @@ public partial class ScreenGrabView
     #region Properties
 
     public Action? OnGrabClose { get; set; }
+    public Action? OnCancel { get; set; }
     private Screen? CurrentScreen { get; set; }
 
     #endregion Properties
@@ -119,6 +120,7 @@ public partial class ScreenGrabView
         {
             case Key.Escape:
                 CloseAllScreenGrabs();
+                OnCancel?.Invoke();
                 break;
             case Key.F:
                 FreezeUnfreezeAllScreenGrabs();
@@ -242,6 +244,7 @@ public partial class ScreenGrabView
         if (e.RightButton == MouseButtonState.Pressed)
         {
             CloseAllScreenGrabs();
+            OnCancel?.Invoke();
             return;
         }
 
@@ -356,6 +359,7 @@ public partial class ScreenGrabView
         if (_selectBorder.Width <= 2 * SelectBorderThickness || _selectBorder.Height <= 2 * SelectBorderThickness)
         {
             CloseAllScreenGrabs(); // 即使不截图也关闭所有窗口
+            OnCancel?.Invoke();
             return;
         }
 
