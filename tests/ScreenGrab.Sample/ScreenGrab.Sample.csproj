@@ -15,18 +15,19 @@
 	</PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj"/>
+        <ProjectReference Include="..\..\src\ScreenGrab\ScreenGrab.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NHotkey"/>
-        <PackageReference Include="NHotkey.Wpf"/>
-        <PackageReference Include="WPF-UI"/>
-        <PackageReference Include="WPF-UI.Tray"/>
+        <PackageReference Include="Hardcodet.NotifyIcon.Wpf" />
+        <PackageReference Include="iNKORE.UI.WPF.Modern" />
+        <PackageReference Include="NHotkey" />
+        <PackageReference Include="NHotkey.Wpf" />
     </ItemGroup>
 
     <ItemGroup>
-        <Resource Include="nuget.png"/>
+        <Resource Include="nuget.png" />
+        <Resource Include="app.ico" />
     </ItemGroup>
 
 </Project>

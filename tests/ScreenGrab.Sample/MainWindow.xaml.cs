@@ -4,11 +4,10 @@ using System.Windows.Input;
 using NHotkey;
 using NHotkey.Wpf;
 using ScreenGrab.Extensions;
-using Wpf.Ui.Tray.Controls;
 
 namespace ScreenGrab.Sample;
 
-public partial class MainWindow
+public partial class MainWindow : Window
 {
     public MainWindow()
     {
@@ -65,8 +64,10 @@ public partial class MainWindow
         Capture();
     }
 
-    private void Capture_Click(object sender, RoutedEventArgs e)
+    private async void Capture_Click(object sender, RoutedEventArgs e)
     {
+        // 等待ContextMenu关闭动画完成的延迟时间（毫秒）
+        await Task.Delay(150);
         Capture();
     }
 
@@ -84,7 +85,7 @@ public partial class MainWindow
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        HotkeyManager.Current.AddOrReplace("Capture", Key.A, ModifierKeys.Windows | ModifierKeys.Shift, Capture);
+        HotkeyManager.Current.AddOrReplace("Capture", Key.X, ModifierKeys.Windows | ModifierKeys.Shift, Capture);
     }
 
     private void MainWindow_OnUnloaded(object sender, RoutedEventArgs e)
@@ -98,14 +99,14 @@ public partial class MainWindow
         Hide();
     }
 
-    private void NotifyIcon_OnLeftClick(NotifyIcon sender, RoutedEventArgs e)
+    private void OnExitClick(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Shutdown();
+    }
+
+    private void OnOpenClick(object sender, RoutedEventArgs e)
     {
         Show();
         Activate();
-    }
-
-    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
-    {
-        Application.Current.Shutdown();
     }
 }
