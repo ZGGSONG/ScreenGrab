@@ -51,6 +51,8 @@ public partial class ScreenGrabView
     private double _ySpaceDelta;
     private Point _promptMsgTopLeft;
     private Point _promptMsgBottomRight;
+    private Point _pressedPromptMsgTopLeft;
+    private Point _pressedPromptMsgBottomRight;
     private bool _isFreezeHandle;
 
     private readonly Border _selectBorder = new();
@@ -281,6 +283,13 @@ public partial class ScreenGrabView
         SetAuxiliaryVisibility(false);
         SetPromptMsgVisibility(false);
         SetPressedPromptMsgVisibility(true);
+
+        // 强制更新布局后再缓存 PressedPromptMsg 控件的边界
+        PressedPromptMsg.UpdateLayout();
+        _pressedPromptMsgTopLeft = PressedPromptMsg.TranslatePoint(new Point(0, 0), this);
+        _pressedPromptMsgBottomRight = PressedPromptMsg.TranslatePoint(
+            new Point(PressedPromptMsg.ActualWidth, PressedPromptMsg.ActualHeight), this);
+
         RegionClickCanvas.CaptureMouse();
         CursorClipper.ClipCursor(this);
         _clickedPoint = e.GetPosition(this);
@@ -322,11 +331,11 @@ public partial class ScreenGrabView
 
         var movingPoint = e.GetPosition(this);
 
-        // 检查鼠标是否在 PromptMsg 控件区域内
-        var isMouseInPromptMsg = movingPoint.X >= _promptMsgTopLeft.X && movingPoint.X <= _promptMsgBottomRight.X &&
-                                    movingPoint.Y >= _promptMsgTopLeft.Y && movingPoint.Y <= _promptMsgBottomRight.Y;
         if (!_isSelecting)
         {
+            // 检查鼠标是否在 PromptMsg 控件区域内
+            var isMouseInPromptMsg = movingPoint.X >= _promptMsgTopLeft.X && movingPoint.X <= _promptMsgBottomRight.X &&
+                                        movingPoint.Y >= _promptMsgTopLeft.Y && movingPoint.Y <= _promptMsgBottomRight.Y;
 
             SetPromptMsgVisibility(!isMouseInPromptMsg);
 
@@ -341,7 +350,17 @@ public partial class ScreenGrabView
             return;
         }
 
-        SetPressedPromptMsgVisibility(!isMouseInPromptMsg);
+        // 计算当前选择区域
+        var left = Math.Min(_clickedPoint.X, movingPoint.X);
+        var top = Math.Min(_clickedPoint.Y, movingPoint.Y);
+        var right = Math.Max(_clickedPoint.X, movingPoint.X);
+        var bottom = Math.Max(_clickedPoint.Y, movingPoint.Y);
+
+        // 使用缓存的边界检查选择区域是否与 PressedPromptMsg 控件重叠
+        var isOverlapping = !(right < _pressedPromptMsgTopLeft.X || left > _pressedPromptMsgBottomRight.X ||
+                              bottom < _pressedPromptMsgTopLeft.Y || top > _pressedPromptMsgBottomRight.Y);
+
+        SetPressedPromptMsgVisibility(!isOverlapping);
 
         if (_isSpaceDown)
         {
@@ -350,9 +369,6 @@ public partial class ScreenGrabView
         }
 
         _isSpaceDown = false;
-
-        var left = Math.Min(_clickedPoint.X, movingPoint.X);
-        var top = Math.Min(_clickedPoint.Y, movingPoint.Y);
 
         _selectBorder.Height = Math.Max(_clickedPoint.Y, movingPoint.Y) - top;
         _selectBorder.Width = Math.Max(_clickedPoint.X, movingPoint.X) - left;
