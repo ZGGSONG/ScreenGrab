@@ -19,11 +19,12 @@ public partial class ScreenGrabView
 {
     #region Constructors
 
-    public ScreenGrabView(Action<Bitmap>? action, bool isAuxiliary = false)
+    public ScreenGrabView(Action<Bitmap>? action, bool isAuxiliary = false, ImageSource? preCapture = null)
     {
         InitializeComponent();
         _onImageCaptured = action;
         _isAuxiliary = isAuxiliary;
+        _preCapture = preCapture;
     }
 
     #endregion Constructors
@@ -58,6 +59,7 @@ public partial class ScreenGrabView
 
     private readonly Action<Bitmap>? _onImageCaptured;
     private readonly bool _isAuxiliary;
+    private readonly ImageSource? _preCapture;
 
     #endregion Fields
 
@@ -79,7 +81,17 @@ public partial class ScreenGrabView
         KeyDown += ScreenGrab_KeyDown;
         KeyUp += ScreenGrab_KeyUp;
 
-        SetImageToBackground();
+        // 使用预先截取的图像，避免窗口显示后再截图导致 Popup 消失
+        if (_preCapture != null)
+        {
+            FreezeBgImage();
+            BackgroundImage.Source = _preCapture;
+            BackgroundBrush.Opacity = 0.2;
+        }
+        else
+        {
+            SetImageToBackground();
+        }
 
 #if DEBUG
         Topmost = false;

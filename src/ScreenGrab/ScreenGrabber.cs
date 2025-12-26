@@ -20,14 +20,21 @@ public abstract class ScreenGrabber
 
         IsCapturing = true;
 
+        // 预先截取所有屏幕，避免窗口显示时导致 Popup 消失
         var allScreens = Screen.AllScreens;
+        var preCaptures = allScreens.PreCaptureAllScreens();
 
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
         var numberOfScreenGrabWindowsToCreate = allScreens.Count() - allScreenGrab.Count;
 
+        var screenList = allScreens.ToList();
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
         {
-            var view = new ScreenGrabView(OnCaptured, isAuxiliary)
+            var screenIndex = allScreenGrab.Count + i;
+            var targetScreen = screenIndex < screenList.Count ? screenList[screenIndex] : null;
+            var preCapture = targetScreen != null && preCaptures.TryGetValue(targetScreen, out var img) ? img : null;
+
+            var view = new ScreenGrabView(OnCaptured, isAuxiliary, preCapture)
             {
                 OnGrabClose = () => IsCapturing = false
             };
@@ -66,18 +73,26 @@ public abstract class ScreenGrabber
 
         IsCapturing = true;
 
+        // 预先截取所有屏幕，避免窗口显示时导致 Popup 消失
         var allScreens = Screen.AllScreens;
+        var preCaptures = allScreens.PreCaptureAllScreens();
+
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
         var numberOfScreenGrabWindowsToCreate = allScreens.Count() - allScreenGrab.Count;
 
+        var screenList = allScreens.ToList();
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
         {
+            var screenIndex = allScreenGrab.Count + i;
+            var targetScreen = screenIndex < screenList.Count ? screenList[screenIndex] : null;
+            var preCapture = targetScreen != null && preCaptures.TryGetValue(targetScreen, out var img) ? img : null;
+
             var view = new ScreenGrabView(bitmap =>
             {
                 // 截图成功时保存结果并退出消息循环
                 result = bitmap;
                 frame.Continue = false;
-            }, isAuxiliary)
+            }, isAuxiliary, preCapture)
             {
                 OnGrabClose = () =>
                 {
@@ -125,17 +140,25 @@ public abstract class ScreenGrabber
 
         IsCapturing = true;
 
+        // 预先截取所有屏幕，避免窗口显示时导致 Popup 消失
         var allScreens = Screen.AllScreens;
+        var preCaptures = allScreens.PreCaptureAllScreens();
+
         var allScreenGrab = Application.Current.Windows.OfType<ScreenGrabView>().ToList();
         var numberOfScreenGrabWindowsToCreate = allScreens.Count() - allScreenGrab.Count;
 
+        var screenList = allScreens.ToList();
         for (var i = 0; i < numberOfScreenGrabWindowsToCreate; i++)
         {
+            var screenIndex = allScreenGrab.Count + i;
+            var targetScreen = screenIndex < screenList.Count ? screenList[screenIndex] : null;
+            var preCapture = targetScreen != null && preCaptures.TryGetValue(targetScreen, out var img) ? img : null;
+
             var view = new ScreenGrabView(bitmap =>
             {
                 // 截图成功时完成任务
                 _captureTaskCompletionSource?.TrySetResult(bitmap);
-            }, isAuxiliary)
+            }, isAuxiliary, preCapture)
             {
                 OnGrabClose = () =>
                 {
