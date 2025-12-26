@@ -261,6 +261,7 @@ public partial class ScreenGrabView
         {
             CloseAllScreenGrabs();
             OnCancel?.Invoke();
+            e.Handled = true;
             return;
         }
 
