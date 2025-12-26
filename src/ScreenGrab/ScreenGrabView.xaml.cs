@@ -41,12 +41,13 @@ public partial class ScreenGrabView
     private Point _clickedPoint;
     private DpiScale? _dpiScale;
     private bool _isSelecting;
-    private bool _isShiftDown;
+    private bool _isSpaceDown;
+    private bool _isPanning;
     private double _selectLeft;
     private double _selectTop;
-    private Point _shiftPoint;
-    private double _xShiftDelta;
-    private double _yShiftDelta;
+    private Point _spacePoint;
+    private double _xSpaceDelta;
+    private double _ySpaceDelta;
     private Point _promptMsgTopLeft;
     private Point _promptMsgBottomRight;
     private bool _isFreezeHandle;
@@ -125,6 +126,10 @@ public partial class ScreenGrabView
             case Key.F:
                 FreezeUnfreezeAllScreenGrabs();
                 break;
+            case Key.Space:
+                _isSpaceDown = true;
+                e.Handled = true;
+                break;
         }
     }
 
@@ -132,10 +137,11 @@ public partial class ScreenGrabView
     {
         switch (e.Key)
         {
-            case Key.LeftShift:
-            case Key.RightShift:
-                _isShiftDown = false;
-                _clickedPoint = new Point(_clickedPoint.X + _xShiftDelta, _clickedPoint.Y + _yShiftDelta);
+            case Key.Space:
+                _isSpaceDown = false;
+                _isPanning = false;
+                _clickedPoint = new Point(_clickedPoint.X + _xSpaceDelta, _clickedPoint.Y + _ySpaceDelta);
+                e.Handled = true;
                 break;
         }
     }
@@ -217,6 +223,15 @@ public partial class ScreenGrabView
         PromptMsg.Visibility = setVisibility;
     }
 
+    private void SetPressedPromptMsgVisibility(bool isVisible)
+    {
+        var setVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        if (PressedPromptMsg.Visibility == setVisibility)
+            return;
+
+        PressedPromptMsg.Visibility = setVisibility;
+    }
+
     #endregion
 
     #region Mouse Events
@@ -225,6 +240,7 @@ public partial class ScreenGrabView
     {
         SetAuxiliaryVisibility(false);
         SetPromptMsgVisibility(false);
+        SetPressedPromptMsgVisibility(false);
     }
 
     private void RegionClickCanvas_MouseEnter(object sender, MouseEventArgs e)
@@ -251,6 +267,7 @@ public partial class ScreenGrabView
         _isSelecting = true;
         SetAuxiliaryVisibility(false);
         SetPromptMsgVisibility(false);
+        SetPressedPromptMsgVisibility(true);
         RegionClickCanvas.CaptureMouse();
         CursorClipper.ClipCursor(this);
         _clickedPoint = e.GetPosition(this);
@@ -292,11 +309,11 @@ public partial class ScreenGrabView
 
         var movingPoint = e.GetPosition(this);
 
+        // 检查鼠标是否在 PromptMsg 控件区域内
+        var isMouseInPromptMsg = movingPoint.X >= _promptMsgTopLeft.X && movingPoint.X <= _promptMsgBottomRight.X &&
+                                    movingPoint.Y >= _promptMsgTopLeft.Y && movingPoint.Y <= _promptMsgBottomRight.Y;
         if (!_isSelecting)
         {
-            // 检查鼠标是否在 PromptMsg 控件区域内
-            var isMouseInPromptMsg = movingPoint.X >= _promptMsgTopLeft.X && movingPoint.X <= _promptMsgBottomRight.X &&
-                                     movingPoint.Y >= _promptMsgTopLeft.Y && movingPoint.Y <= _promptMsgBottomRight.Y;
 
             SetPromptMsgVisibility(!isMouseInPromptMsg);
 
@@ -311,13 +328,15 @@ public partial class ScreenGrabView
             return;
         }
 
-        if (Keyboard.Modifiers == ModifierKeys.Shift)
+        SetPressedPromptMsgVisibility(!isMouseInPromptMsg);
+
+        if (_isSpaceDown)
         {
             PanSelection(movingPoint);
             return;
         }
 
-        _isShiftDown = false;
+        _isSpaceDown = false;
 
         var left = Math.Min(_clickedPoint.X, movingPoint.X);
         var top = Math.Min(_clickedPoint.Y, movingPoint.Y);
@@ -340,6 +359,7 @@ public partial class ScreenGrabView
             return;
 
         _isSelecting = false;
+        _isPanning = false;
         CurrentScreen = null;
         CursorClipper.UnClipCursor();
         RegionClickCanvas.ReleaseMouseCapture();
@@ -393,19 +413,19 @@ public partial class ScreenGrabView
 
     private void PanSelection(Point movingPoint)
     {
-        if (!_isShiftDown)
+        if (!_isPanning)
         {
-            _shiftPoint = movingPoint;
+            _spacePoint = movingPoint;
             _selectLeft = Canvas.GetLeft(_selectBorder);
             _selectTop = Canvas.GetTop(_selectBorder);
+            _isPanning = true;
         }
 
-        _isShiftDown = true;
-        _xShiftDelta = movingPoint.X - _shiftPoint.X;
-        _yShiftDelta = movingPoint.Y - _shiftPoint.Y;
+        _xSpaceDelta = movingPoint.X - _spacePoint.X;
+        _ySpaceDelta = movingPoint.Y - _spacePoint.Y;
 
-        var leftValue = _selectLeft + _xShiftDelta;
-        var topValue = _selectTop + _yShiftDelta;
+        var leftValue = _selectLeft + _xSpaceDelta;
+        var topValue = _selectTop + _ySpaceDelta;
 
         if (CurrentScreen is not null && _dpiScale is not null)
         {

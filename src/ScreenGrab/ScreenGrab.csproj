@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <PropertyGroup Label="Nuget">
-        <Version>1.0.11</Version>
+        <Version>1.0.12</Version>
         <Title>ScreenGrab</Title>
         <Description>ScreenGrab extracted from Text-Grab</Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>

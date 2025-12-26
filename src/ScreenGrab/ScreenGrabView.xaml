@@ -74,8 +74,49 @@
             <local:AutoGrid
                 ChildMargin="3"
                 ChildVerticalAlignment="Center"
-                Columns="*, *"
-                RowCount="2"
+                Columns="*,*"
+                RowCount="1"
+                RowHeight="30">
+                <Grid.Resources>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Orientation" Value="Horizontal" />
+                        <Setter Property="HorizontalAlignment" Value="Right" />
+                    </Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+
+                    </Style>
+                </Grid.Resources>
+                <!--<StackPanel>
+                    <local:UcCharacter DisplayChar="␣" />
+                    <TextBlock Text="+" />
+                    <local:UcCharacter DisplayChar="🖱" />
+                </StackPanel>
+                <TextBlock Text="移动选区" />-->
+                <StackPanel>
+                    <local:UcCharacter DisplayChar="F" />
+                </StackPanel>
+                <TextBlock x:Name="FreezeTb" Text="取消冻结窗口" />
+            </local:AutoGrid>
+        </Border>
+
+        <Border
+            x:Name="PressedPromptMsg"
+            Margin="15"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Background="#424242"
+            BorderBrush="WhiteSmoke"
+            BorderThickness=".6"
+            Opacity="0.9"
+            Visibility="Collapsed">
+            <local:AutoGrid
+                ChildMargin="3"
+                ChildVerticalAlignment="Center"
+                Columns="*,*"
+                RowCount="1"
                 RowHeight="30">
                 <Grid.Resources>
                     <Style TargetType="StackPanel">
@@ -90,14 +131,11 @@
                     </Style>
                 </Grid.Resources>
                 <StackPanel>
-                    <local:UcCharacter DisplayChar="Shift" />
+                    <local:UcCharacter DisplayChar="␣" />
+                    <TextBlock Text="+" />
                     <local:UcCharacter DisplayChar="🖱" />
                 </StackPanel>
                 <TextBlock Text="移动选区" />
-                <StackPanel>
-                    <local:UcCharacter DisplayChar="F" />
-                </StackPanel>
-                <TextBlock x:Name="FreezeTb" Text="取消冻结窗口" />
             </local:AutoGrid>
         </Border>
     </Grid>
